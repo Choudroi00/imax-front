@@ -35,6 +35,7 @@ jobs:
           path: build.zip
   deploy:
     runs-on: ubuntu-latest
+    needs: build
 
     env:
       HOSTINGER_USER: 'u131354144'
