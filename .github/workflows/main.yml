@@ -76,11 +76,11 @@ jobs:
 
           unzip build.zip -d .
 
-          cp -r dist/* ./
+          cp -r ./dist/* .
 
           rm -rf dist
 
-          rm -f build.zip
+          rm -rf build.zip
 
           echo ${{ env.HTACCESS }} > ./.htacess
 
