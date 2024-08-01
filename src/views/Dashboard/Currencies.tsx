@@ -16,7 +16,7 @@ const Currencies = () => {
     return response.data;
   };
 
-  const {  isLoading,mutate } = useSWR(link, fatcher);
+  const {  mutate } = useSWR(link, fatcher);
  
   return (
     <section className="w-full">
@@ -33,11 +33,8 @@ const Currencies = () => {
         <CreateCurrencies mutate={mutate}/>
       </div>
       <div className="col-span-4">
-        {isLoading
-          ? <div>loading</div>
+       <CurrenciesTable />
 
-          : <CurrenciesTable />
-            }
       </div>
     </section>
   );
