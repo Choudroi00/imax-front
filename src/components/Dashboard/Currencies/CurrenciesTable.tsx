@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { PaginationContainer } from "../ui/PaginationContainer";
 import { debounce } from "lodash";
 import { Currency } from "@/views/Dashboard/Currencies";
+import { toast } from "sonner";
 
 export function CurrenciesTable() {
   const columns : ColumnDef<Currency>[] = [
@@ -133,7 +134,7 @@ export function CurrenciesTable() {
                 height={16}
               />
             </Button>
-            <Button
+            {/* <Button
               className="w-6 h-6"
               to={"/dashboard/currencies/update/" + currency.id}
             >
@@ -143,7 +144,7 @@ export function CurrenciesTable() {
                 width={14}
                 height={14}
               />
-            </Button>
+            </Button> */}
             <Button
               className="w-6 h-6"
               to={`/dashboard/currencies/${currency.id}`}
@@ -165,7 +166,38 @@ export function CurrenciesTable() {
 
   //const link = "/dashboard/currencies";
 
-  const handleDelete = (id: number)=>{}
+  const handleDelete = (id: number)=>{
+
+    const handleDelete = (id: number | string) => {
+      axiosClient
+        .delete("/dashboard/currencies/" + id)
+        .then((response) => {
+          toast("Success!", {
+            description: response.data.message || "Currency deleted successfully",
+            className: "bg-green-600 border-0",
+            action: {
+              label: "Close",
+              onClick: () => {},
+            },
+          });
+        })
+        .catch((error) => {
+          toast("Error!", {
+            description: error.response?.data?.message || "An error occurred",
+            className: "bg-red-600 border-0",
+            action: {
+              label: "Close",
+              onClick: () => {},
+            },
+          });
+        })
+        .finally(() => {
+          
+        });
+    };
+
+    handleDelete(id);
+  }
 
   const fatcher = async () => {
     const response = await axiosClient.get(link);

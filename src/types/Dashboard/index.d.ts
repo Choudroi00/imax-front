@@ -55,13 +55,28 @@ interface Option {
   option: string;
 }
 
+
+export interface ProductVariant {
+  id: number
+  name: string
+  name_variants: JSON
+  attr_id: number
+  product_id: number
+  price: number
+}
+export interface ProductAttribute {
+  name: string
+  variants: ProductVariant[]
+}
+
 export interface Product extends ProductInfo {
   images?: ProductImage[];
   inputs?: ProductInput[];
   codes?: ProductCode[];
   seo?: ProductSeo;
   questions?: ProductQuestion[];
-  prices?: ProductPrice;
+  base_ref_price: number
+  attributes: ProductAttribute[]
 }
 
 export interface ProductSeo {
