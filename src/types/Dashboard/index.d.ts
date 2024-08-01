@@ -94,6 +94,8 @@ export interface AllProduct {
   slug: string;
   image: string;
   title: string;
+  short_description:string;
+  totalPriceCalculation:string;
   category: string;
   price: string;
   rate: string | number;

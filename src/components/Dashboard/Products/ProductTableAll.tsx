@@ -63,6 +63,63 @@ export function ProductTableAll() {
       ),
     },
     {
+      accessorKey: "short_description",
+      header: ({ column }) => (
+        <Button
+          className="px-2 py-4"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="text-slate-500 text-xs font-normal font-['Lato'] capitalize flex gap-2">
+            Short description
+            <ArrowUpDown className="h-4 w-4" />
+          </span>
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
+          {row.getValue("short_description")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "totalPriceCalculation",
+      header: ({ column }) => (
+        <Button
+          className="px-2 py-4"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="text-slate-500 text-xs font-normal font-['Lato'] capitalize flex gap-2">
+            Total price calculation
+            <ArrowUpDown className="h-4 w-4" />
+          </span>
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
+          {row.getValue("totalPriceCalculation")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "short_description",
+      header: ({ column }) => (
+        <Button
+          className="px-2 py-4"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="text-slate-500 text-xs font-normal font-['Lato'] capitalize flex gap-2">
+            Short description
+            <ArrowUpDown className="h-4 w-4" />
+          </span>
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
+          {row.getValue("short_description")}
+        </span>
+      ),
+    },
+    {
       accessorKey: "category",
       header: ({ column }) => (
         <Button
