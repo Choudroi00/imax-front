@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { useState } from "react";
+import { Attribution } from "@/components/Dashboard/Products/Attribituon";
 
 const ProductsDashboard = () => {
   const [tab, setTab] = useState("all");
@@ -36,8 +37,9 @@ const ProductsDashboard = () => {
         className="mt-5 grid grid-cols-6 gap-4 items-start"
         defaultValue={tab}
       >
-        <TabsList className="col-span-2">
-          <div className="px-4 py-3 bg-white rounded-3xl flex-col justify-start items-start gap-3 flex w-full">
+        
+          <TabsList className="col-span-2 flex flex-col">
+            <div className="px-4 py-3 bg-white rounded-3xl flex-col justify-start items-start gap-3 flex w-full">
             <TabsTrigger
               value="all"
               className={cn(
@@ -81,8 +83,15 @@ const ProductsDashboard = () => {
                 Request
               </span>
             </TabsTrigger>
-          </div>
-        </TabsList>
+            </div>
+            <div>
+            <div className="mt-5">
+              <Attribution />
+            </div>
+            </div>
+          </TabsList>
+           
+        
         <div className="col-span-4">
           <TabsContent value="all">
             <ProductTableAll />
@@ -94,6 +103,7 @@ const ProductsDashboard = () => {
             <OrderRequestTable />
           </TabsContent>
         </div>
+        
       </Tabs>
     </section>
   );
