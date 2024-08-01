@@ -37,7 +37,7 @@ export function ProductTableAll() {
       ),
       cell: ({ row }) => (
         <img
-          src={row.getValue("image")}
+          src={/*row.getValue("image")*/ "https://th.bing.com/th/id/OIP.wyS54dWv02tzWeNTGgM8KgHaFW?rs=1&pid=ImgDetMain"}
           alt="image"
           className="w-14 h-14 rounded-2xl"
         />
