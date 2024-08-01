@@ -82,7 +82,7 @@ jobs:
 
           rm -rf build.zip
 
-          echo ${{ env.HTACCESS }} > ./.htacess
+          echo $HTACCESS > ./.htacess
 
           EOF
 
