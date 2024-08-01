@@ -29,6 +29,7 @@ import Codes from "./views/Dashboard/Code";
 import CheckoutSuccess from "./views/CheckoutSuccess";
 import OrderView from "./views/Dashboard/OrderView";
 import Coupons from "./views/Dashboard/Coupons";
+import Currencies from "./views/Dashboard/Currencies";
 
 const router = createBrowserRouter([
   {
@@ -160,6 +161,10 @@ const router = createBrowserRouter([
           {
             path: "dashboard/orders/:id",
             element: <OrderView />,
+          },
+          {
+            path: "dashboard/currencies",
+            element: <Currencies />,
           },
         ],
       },

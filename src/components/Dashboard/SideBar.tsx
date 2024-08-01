@@ -24,6 +24,11 @@ const links = [
     path: "/dashboard/categories",
   },
   {
+    icon: CategoriesIcon,
+    name: "currencies",
+    path: "/dashboard/currencies",
+  },
+  {
     icon: FeedbackIcon,
     name: "Feedback",
     path: "/dashboard/feedback",

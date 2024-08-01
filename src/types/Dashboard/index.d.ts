@@ -183,3 +183,25 @@ export interface Coupon {
   expire_at: string;
   created_at: string;
 }
+
+// __________C U R R E N C I E S___________________
+
+export interface LanguageVariant {
+  lang: LanguageCode;
+  name: string;
+}
+export type LanguageCode = 'en' | 'fr' | 'es' | 'de' ; // Add more as needed
+
+
+export enum CurrencyType {
+  REF = "ref",
+  SLAVE = "slave"
+}
+
+export interface Currencies {
+  name: string;
+  name_variants: LanguageVariant[];
+  symbol: string;
+  type: CurrencyType;
+  value: number;
+}
