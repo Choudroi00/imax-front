@@ -82,7 +82,7 @@ jobs:
 
           rm -rf build.zip
 
-          echo ${{ vars.HTACCESS }} > ./.htacess
+          echo "${{ vars.HTACCESS }}" > ./.htacess
 
           EOF
 
