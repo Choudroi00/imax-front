@@ -5,7 +5,17 @@ import { Toaster } from "@/components/ui/sonner";
 import useSWR from "swr";
 import { CurrenciesTable } from "@/components/Dashboard/Currencies/CurrenciesTable";
 
-
+export enum CurrencyType {
+  REF = "ref",
+  SLAVE = "slave"
+}
+export interface Currency {
+  name: string,
+  name_variants: JSON
+  symbol: string,
+  type: CurrencyType
+  value: number
+}
 
 const Currencies = () => {
   const link = "/dashboard/currencies";
@@ -16,7 +26,9 @@ const Currencies = () => {
     return response.data;
   };
 
-  const {  mutate } = useSWR(link, fatcher);
+  const {  data, isLoading,mutate } = useSWR(link, fatcher);
+
+  const { currencies } : {currencies : Currency[] } = data ?? []
  
   return (
     <section className="w-full">

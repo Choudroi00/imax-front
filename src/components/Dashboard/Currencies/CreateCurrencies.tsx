@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import axiosClient from "@/axios";
 import { KeyedMutator } from "swr";
 import { Button } from "@/components/ui/button";
+import { XIcon } from "lucide-react";
 
 interface NameVariant {
   lang: string;
@@ -32,6 +33,73 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
     newVariants[index][field] = value;
     setNameVariants(newVariants);
   };
+
+  const handleRemVariant = (index: number)=>{
+    setNameVariants((prevState)=>{ return prevState.splice(index,1) })
+  }
+
+  const postCurrency = (event:React.FormEvent<HTMLFormElement> ) => {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data = {
+      name: formData.get("name"),
+      name_variants: nameVariants,
+      symbol: formData.get("symbol"),
+      type: formData.get("type"),
+      value: formData.get("value"),
+    };
+
+    const target: any = event.target;
+
+    axiosClient
+    .post('/dashboard/currencies', data)
+    .then((resp)=>{
+      toast("Success!", {
+        description: resp.data.message || "Currency created successfully",
+        className: "bg-green-600 border-0",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      mutate();
+
+      target.reset();
+      setNameVariants([{ lang: '', name: '' }]);
+    })
+    .catch((error) => {
+      if (error.response.status == 422) {
+        Object.keys(error.response.data.errors).forEach((key: string) => {
+          error.response.data.errors[key].forEach((errorMessage: string) => {
+            toast("Error validation failed " + key, {
+              description: errorMessage,
+              className: "bg-red-600 border-0",
+              action: {
+                label: "Close",
+                onClick: () => {},
+              },
+            });
+          });
+        });
+      } else {
+        toast("Error!", {
+          description: error.response?.data?.message || "An error occurred",
+          className: "bg-red-600 border-0",
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        });
+      }
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+
+
+
+
+  }
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -101,7 +169,7 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] md:max-w-[636px] bg-white">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={postCurrency}>
           <DialogHeader>
             <DialogTitle>New Currency</DialogTitle>
           </DialogHeader>
@@ -118,6 +186,7 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
               <div key={index} className="col-span-2 flex gap-4">
                 <input
                   type="text"
+                  name={`variant.${index}.lang`}
                   placeholder="Language"
                   value={variant.lang}
                   onChange={(e) => handleVariantChange(index, 'lang', e.target.value)}
@@ -125,11 +194,17 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
                 />
                 <input
                   type="text"
+                  name={`variant.${index}.name`}
                   placeholder="Name Translation"
                   value={variant.name}
                   onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
                   className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+
+                <button type="button" onClick={(e)=> handleRemVariant(index)} className="p-3 hover:bg-slate-100 ease-in duration-150 rounded-xl transition" >
+                  <XIcon />
+                </button>
+
               </div>
             ))}
             <div className="col-span-2">

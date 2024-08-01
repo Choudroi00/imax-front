@@ -14,16 +14,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Currencies } from "@/types/Dashboard";
+//import { Currencies } from "@/types/Dashboard";
 import axiosClient from "@/axios";
 import useSWR from "swr";
 import { HashLoader } from "react-spinners";
 import { useEffect, useState } from "react";
 import { PaginationContainer } from "../ui/PaginationContainer";
 import { debounce } from "lodash";
+import { Currency } from "@/views/Dashboard/Currencies";
 
 export function CurrenciesTable() {
-  const columns : ColumnDef<Currencies>[] = [
+  const columns : ColumnDef<Currency>[] = [
     {
       accessorKey: "name",
       header: () => (
@@ -35,7 +36,7 @@ export function CurrenciesTable() {
       ),
       cell: ({ row }) => (
         <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
-          {row.getValue("Name")}
+          {row.getValue("name")}
         </span>
       ),
       
@@ -51,7 +52,7 @@ export function CurrenciesTable() {
       ),
       cell: ({ row }) => (
         <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
-          {row.getValue("name_variants")}
+          {JSON.parse( row.getValue("name_variants") ).length   } translation found : { JSON.parse( row.getValue("name_variants") ).map((item)=>item.lang.toUpperCase()).join(', ') }
         </span>
       ),
       
@@ -104,23 +105,95 @@ export function CurrenciesTable() {
       ),
       
     },
+    {
+      id: "actions",
+      header: () => (
+        <Button className="px-2 py-4">
+          <span className="text-slate-500 text-xs font-normal font-['Lato'] capitalize">
+            Actions
+          </span>
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const currency = row.original;
+
+        return (
+          <div
+            className="flex items-center disabled:cursor-not-allowed disabled:opacity-60"
+            aria-disabled={isLoading}
+          >
+            <Button
+              className="w-6 h-6"
+              onClick={() => handleDelete(currency.id)}
+            >
+              <img
+                src="/icons/delete.svg"
+                alt="delete"
+                width={13}
+                height={16}
+              />
+            </Button>
+            <Button
+              className="w-6 h-6"
+              to={"/dashboard/currencies/update/" + currency.id}
+            >
+              <img
+                src="/icons/update.svg"
+                alt="update"
+                width={14}
+                height={14}
+              />
+            </Button>
+            <Button
+              className="w-6 h-6"
+              to={`/dashboard/currencies/${currency.id}`}
+            >
+              <img
+                src="/icons/eye-view.svg"
+                alt="eye-view"
+                width={16}
+                height={12}
+              />
+            </Button>
+          </div>
+        );
+      },
+    },
     
   ];
+
+
+  //const link = "/dashboard/currencies";
+
+  const handleDelete = (id: number)=>{}
+
+  const fatcher = async () => {
+    const response = await axiosClient.get(link);
+
+    return response.data;
+  };
+
+  
+
   const [link, setLink] = useState("/dashboard/currencies");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const fetcher = async () => {
-    const response = await axiosClient.get(link);
-    return response.data;
-  };
+  const {  data, isLoading,mutate } = useSWR(link, fatcher);
 
-  const { data, isLoading, mutate } = useSWR(link, fetcher);
-  const products: Currencies[] = data?.products ?? [];
+  const { currencies } : {currencies : Currency[] } = data ?? []
+
+  // const fetcher = async () => {
+  //   const response = await axiosClient.get(link);
+  //   return response.data;
+  // };
+
+  //const { data, isLoading, mutate } = useSWR(link, fetcher);
+  //const products: Currencies[] = data?.products ?? [];
 
   // Log the data to debug
   console.log("Data:", data);
-  console.log("Products:", products);
+  //console.log("Products:", products);
 
   const onSearchChange = debounce(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +204,7 @@ export function CurrenciesTable() {
   );
 
   const table = useReactTable({
-    data: products,
+    data: currencies,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -146,7 +219,7 @@ export function CurrenciesTable() {
       if (searchQuery) {
         query += `&search=${searchQuery}`;
       }
-      return `/dashboard/orders?page=${currentPage}${query}`;
+      return `/dashboard/currencies?page=${currentPage}${query}`;
     };
 
     setLink(buildLink());
@@ -157,7 +230,7 @@ export function CurrenciesTable() {
     <div className="w-full py-4 px-6 bg-white rounded-xl">
       <div className="flex">
         <Input
-          placeholder="Filter title,email,name,order id..."
+          placeholder="Filter currency , symbol..."
           onChange={onSearchChange}
           className="max-w-sm"
         />
