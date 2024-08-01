@@ -32,7 +32,7 @@ const Currencies = () => {
         />
         <CreateCurrencies mutate={mutate}/>
       </div>
-      <div className="col-span-4">
+      <div className="col-span-4 mt-5">
        <CurrenciesTable />
 
       </div>
