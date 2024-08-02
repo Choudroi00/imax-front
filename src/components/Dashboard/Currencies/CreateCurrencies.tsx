@@ -34,8 +34,8 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
     setNameVariants(newVariants);
   };
 
-  const handleRemVariant = (index: number)=>{
-    setNameVariants((prevState)=>{ return prevState.splice(index,1) })
+  const handleRemVariant = (indexx: number)=>{
+    setNameVariants((prevState)=>{ return [...prevState.filter((item,index)=> index !== indexx)] })
   }
 
   const postCurrency = (event:React.FormEvent<HTMLFormElement> ) => {
@@ -169,7 +169,7 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] md:max-w-[636px] bg-white">
-        <form onSubmit={postCurrency}>
+        <form className={"select-none"} onSubmit={postCurrency}>
           <DialogHeader>
             <DialogTitle>New Currency</DialogTitle>
           </DialogHeader>

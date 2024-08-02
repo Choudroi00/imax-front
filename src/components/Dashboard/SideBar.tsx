@@ -5,6 +5,7 @@ import { FeedbackIcon } from "@/assets/svg/FeedbackIcon";
 import { ProductsIcon } from "@/assets/svg/ProductsIcon";
 import { UserIcon } from "@/assets/svg/UserIcon";
 import { cn } from "@/lib/utils";
+import { CircleDollarSignIcon, Currency, CurrencyIcon, DollarSignIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const links = [
@@ -24,7 +25,7 @@ const links = [
     path: "/dashboard/categories",
   },
   {
-    icon: CategoriesIcon,
+    icon: DollarSignIcon,
     name: "currencies",
     path: "/dashboard/currencies",
   },

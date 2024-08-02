@@ -22,6 +22,8 @@ import { useEffect, useState } from "react";
 import { PaginationContainer } from "../ui/PaginationContainer";
 import { debounce } from "lodash";
 import { Currency } from "@/views/Dashboard/Currencies";
+import { toast } from "sonner";
+import {LanguageVariant} from "@/types/Dashboard";
 
 export function CurrenciesTable() {
   const columns : ColumnDef<Currency>[] = [
@@ -52,7 +54,7 @@ export function CurrenciesTable() {
       ),
       cell: ({ row }) => (
         <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
-          {JSON.parse( row.getValue("name_variants") ).length   } translation found : { JSON.parse( row.getValue("name_variants") ).map((item)=>item.lang.toUpperCase()).join(', ') }
+          {JSON.parse( row.getValue("name_variants") ).length   } translation found : { (row.getValue("name_variants") as LanguageVariant[]).map((item:LanguageVariant)=>item.lang.toUpperCase()).join(', ') }
         </span>
       ),
       
@@ -124,7 +126,7 @@ export function CurrenciesTable() {
           >
             <Button
               className="w-6 h-6"
-              onClick={() => handleDelete(currency.id)}
+              onClick={() => handleDelete(currency.id ? currency.id : -1)}
             >
               <img
                 src="/icons/delete.svg"
@@ -133,7 +135,7 @@ export function CurrenciesTable() {
                 height={16}
               />
             </Button>
-            <Button
+            {/* <Button
               className="w-6 h-6"
               to={"/dashboard/currencies/update/" + currency.id}
             >
@@ -143,7 +145,7 @@ export function CurrenciesTable() {
                 width={14}
                 height={14}
               />
-            </Button>
+            </Button> */}
             <Button
               className="w-6 h-6"
               to={`/dashboard/currencies/${currency.id}`}
@@ -165,7 +167,38 @@ export function CurrenciesTable() {
 
   //const link = "/dashboard/currencies";
 
-  const handleDelete = (id: number)=>{}
+  const handleDelete = (id: number)=>{
+
+    const handleDelete = (id: number | string) => {
+      axiosClient
+        .delete("/dashboard/currencies/" + id)
+        .then((response) => {
+          toast("Success!", {
+            description: response.data.message || "Currency deleted successfully",
+            className: "bg-green-600 border-0",
+            action: {
+              label: "Close",
+              onClick: () => {},
+            },
+          });
+        })
+        .catch((error) => {
+          toast("Error!", {
+            description: error.response?.data?.message || "An error occurred",
+            className: "bg-red-600 border-0",
+            action: {
+              label: "Close",
+              onClick: () => {},
+            },
+          });
+        })
+        .finally(() => {
+          
+        });
+    };
+
+    handleDelete(id);
+  }
 
   const fatcher = async () => {
     const response = await axiosClient.get(link);

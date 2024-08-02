@@ -10,6 +10,7 @@ export enum CurrencyType {
   SLAVE = "slave"
 }
 export interface Currency {
+    id: number | undefined
   name: string,
   name_variants: JSON
   symbol: string,
