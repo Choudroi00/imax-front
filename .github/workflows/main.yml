@@ -3,7 +3,7 @@ name: DeployReactApp
 on:
   push:
     branches:
-      - main
+      - admin-re-ui
   workflow_dispatch:
 
 jobs:
