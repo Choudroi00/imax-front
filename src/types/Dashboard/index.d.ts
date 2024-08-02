@@ -14,6 +14,7 @@ export interface ProductInfo {
   type_ar?: string;
   type_fr?: string;
   slug?: string;
+  short_description;
 }
 
 export interface ProductImage {
@@ -56,17 +57,26 @@ interface Option {
 }
 
 
+
+
 export interface ProductVariant {
   id: number
   name: string
-  name_variants: JSON
+  name_variants: LanguageVariant[] | undefined
   attr_id: number
-  product_id: number
-  price: number
+  product_id: number | undefined
+  price: string
 }
-export interface ProductAttribute {
-  name: string
+export interface ProductAttribute extends ProductAttributeInfo{
+
   variants: ProductVariant[]
+
+}
+
+export interface ProductAttributeInfo {
+  name: string
+  name_variants: LanguageVariant[] | undefined
+
 }
 
 export interface Product extends ProductInfo {
@@ -205,7 +215,7 @@ export interface LanguageVariant {
   lang: LanguageCode;
   name: string;
 }
-export type LanguageCode = 'en' | 'fr' | 'es' | 'de' ; // Add more as needed
+export type LanguageCode = 'en' | 'fr' | 'es' | 'de' | string ; // Add more as needed
 
 
 export enum CurrencyType {

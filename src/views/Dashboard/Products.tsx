@@ -53,6 +53,21 @@ const ProductsDashboard = () => {
               <ProductsIcon className="fill-current" />
               <span className="font-['Lato'] text-base font-medium">All</span>
             </TabsTrigger>
+              <TabsTrigger
+                  value="attributes"
+                  className={cn(
+                      "px-4 py-3 flex gap-3 items-center rounded-xl",
+                      tab == "attributes"
+                          ? "bg-indigo-50 text-blue-600 fill-blue-600"
+                          : "bg-white text-stone-800 fill-stone-800"
+                  )}
+                  onClick={() => setTab("attributes")}
+              >
+                <ProductsIcon className="fill-current" />
+                <span className="font-['Lato'] text-base font-medium">
+                Attributes
+              </span>
+              </TabsTrigger>
             <TabsTrigger
               value="orders"
               className={cn(
@@ -94,6 +109,9 @@ const ProductsDashboard = () => {
         
         <div className="col-span-4">
           <TabsContent value="all">
+            <ProductTableAll />
+          </TabsContent>
+          <TabsContent value="attributes">
             <ProductTableAll />
           </TabsContent>
           <TabsContent value="orders">

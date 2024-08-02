@@ -4,7 +4,7 @@ import { PageTitle } from "@/components/Dashboard/ui/PageTitle";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { Product } from "@/types/Dashboard";
+import {Product, ProductAttributeInfo} from "@/types/Dashboard";
 import { QuestionsSeo } from "@/components/Dashboard/AddProduct/QuestionsSeo";
 import axiosClient from "@/axios";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ const ProductView = () => {
   const [activeTab, setActiveTab] = useState("item-1");
   const [product, setProduct] = useState<Product>();
   const [loading, setLoading] = useState(false);
+  const [productAttributes, setAttributes] = useState<ProductAttributeInfo[] | undefined>()
 
   useEffect(() => {
     if (id) {
@@ -33,7 +34,16 @@ const ProductView = () => {
         .finally(() => {
           setLoading(false);
         });
+
+
+
     }
+    axiosClient
+        .get('/dashboard/attributes')
+        .then((resp)=> {
+          setAttributes(resp.data.attributes)
+          console.log(resp.data)
+        })
   }, [id]);
 
   if (loading) {
@@ -146,6 +156,7 @@ const ProductView = () => {
               setProduct={setProduct}
               setActiveTab={setActiveTab}
               product={product}
+              baseAttributes={productAttributes}
             />
           </TabsContent>
           <TabsContent value="item-2">
