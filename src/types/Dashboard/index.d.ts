@@ -224,7 +224,7 @@ export enum CurrencyType {
 }
 
 export interface Currencies {
-  id: number | undefined
+
   name: string;
   name_variants: LanguageVariant[];
   symbol: string;
