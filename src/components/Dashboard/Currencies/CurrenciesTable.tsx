@@ -126,7 +126,7 @@ export function CurrenciesTable() {
           >
             <Button
               className="w-6 h-6"
-              onClick={() => handleDelete(currency.id)}
+              onClick={() => handleDelete(currency.id ? currency.id : -1)}
             >
               <img
                 src="/icons/delete.svg"
