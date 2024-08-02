@@ -75,7 +75,7 @@ export const ProductInfo = ({
               return {
                 name: item.name,
                 name_variants: item.name_variants,
-                variants: [...item.variants, {id: item.variants.length, product_id: 0 ,name: '', price: 0, attr_id: 0, name_variants: [],}]
+                variants: [...item.variants, {id: item.variants.length, product_id: 0 ,name: '', price: '', attr_id: 0, name_variants: [],}]
               }
             }
             return item
@@ -207,7 +207,7 @@ export const ProductInfo = ({
             variants: [...attribute.variants.map((variant: ProductVariant, varIndex: number):ProductVariant=>{
               return varIndex !== id ? variant : {
                 ...variant,
-                price:parseFloat( change ),
+                price: change ,
 
               }
             })]

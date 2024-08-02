@@ -40,11 +40,11 @@ export const QuestionsSeo = ({
 
     setSeo(newSeo);
 
-    onSubmitProduct({
+    onSubmitProduct(product ? {
       ...product,
       seo: newSeo,
       questions,
-    });
+    }: undefined);
 
     setProduct((old) =>
       old
@@ -53,10 +53,7 @@ export const QuestionsSeo = ({
             questions,
             seo: newSeo,
           }
-        : {
-            questions,
-            seo: newSeo,
-          }
+        : undefined
     );
   };
 

@@ -19,17 +19,13 @@ export const CodeInputs = ({
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setProduct((old) =>
-      old
-        ? {
-            ...old,
-            codes,
-            inputs,
-          }
-        : {
-            codes,
-            inputs,
-          }
+    setProduct((old:Product  | undefined):Product | undefined =>
+      old ? {
+          ...old,
+          codes,
+          inputs,
+        }
+        : undefined
     );
 
     setActiveTab("item-3");

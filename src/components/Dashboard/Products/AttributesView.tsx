@@ -4,7 +4,7 @@ import {AudioLinesIcon, MinusIcon, PlusIcon, XIcon} from "lucide-react";
 
 
 export interface AttributeViewProps{
-    baseAttributes: ProductAttributeInfo[]
+    baseAttributes: ProductAttributeInfo[] | undefined
 }
 
 const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
