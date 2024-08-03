@@ -31,7 +31,7 @@ export const ProductInfo = ({
 
   const [type, setType] = useState(product?.type ?? "");
 
-  const [price, setPrice] = useState<number | undefined>(product?.base_ref_price);
+  //const [price, setPrice] = useState<number | undefined>(product?.base_ref_price);
 
   const [productInfo, setProductInfo] = useState<TypeProduct | undefined>(product ?? undefined);
 
@@ -435,8 +435,59 @@ export const ProductInfo = ({
     )
   }
 
-  const onSubmit = (event: { preventDefault: () => void; }) => {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+
+    const formData = new FormData(event.target as HTMLFormElement);
+
+    const product : TypeProduct = {
+      title_en: formData.get("title_en")?.toString() ?? "",
+      title_ar: formData.get("title_ar")?.toString() ?? "",
+      title_fr: formData.get("title_fr")?.toString() ?? "",
+      description_en: formData.get("description_en")?.toString() ?? "",
+      description_fr: formData.get("description_fr")?.toString() ?? "",
+      description_ar: formData.get("description_ar")?.toString() ?? "",
+      category_id: categoryId,
+      type,
+
+      base_ref_price: formData.get('base_ref_price')?.toString() ?? "0",
+      short_description: formData.get("short_description")?.toString() ?? "",
+      discount: formData.get("discount")?.toString() ?? "0",
+      attributes,
+      
+      short_description_variants: [
+        {
+          name: formData.get("short_description_fr")?.toString() ?? "0",
+          lang: 'fr'
+        },
+        {
+          name: formData.get("short_description_ar")?.toString() ?? "0",
+          lang: 'ar'
+        },
+
+      ]
+
+
+    }
+
+    setProductInfo(product)
+
+    setProduct((old)=> old ? {
+      ...old,
+      ...product,
+      attributes,
+      images
+    }: {
+      ...product,
+      attributes,
+      images
+    })
+
+
+
+    setActiveTab("item-2");
+
   }
 
   // const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -540,7 +591,7 @@ export const ProductInfo = ({
               {/** working there  */}
               {/** working there  */}
               {/** working there  */}
-              <div className="col-span-2">
+              <div className="col-span-1">
                 <FormGroup
                     title="Base Price"
                     type="text"
@@ -549,14 +600,43 @@ export const ProductInfo = ({
                     value={product?.base_ref_price}
                 />
               </div>
+              <div className="col-span-1">
+                <FormGroup
+                    title="Discount"
+                    type="text"
+                    placeholder="Discount"
+                    name="discount"
+                    value={product?.discount}
+                />
+              </div>
 
               <div className="col-span-2">
                 <FormGroup
                     title="Short Description"
                     type="text"
-                    placeholder="Base Price"
+                    placeholder="Short Description"
                     name="short_description"
                     value={product?.short_description}
+                />
+              </div>
+              <div className="col-span-2">
+                <FormGroup
+                    title="Short Description FR"
+                    type="text"
+                    placeholder="Short Description"
+                    name="short_description_fr"
+                    value={product ? product.short_description_variants ? product.short_description_variants[0].name : '' : ''}
+                />
+              </div>
+
+              <div className="col-span-2">
+                <FormGroup
+                    title="وصف قصير"
+                    type="text"
+                    placeholder="Short Description"
+                    name="short_description_ar"
+                    dir="rtl"
+                    value={product ? product.short_description_variants ? product.short_description_variants[1].name : '' : ''}
                 />
               </div>
 
