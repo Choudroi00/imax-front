@@ -1,5 +1,11 @@
 import { Category, ProductReviews } from "..";
 
+
+
+
+
+
+
 export interface ProductInfo {
   id?: number | string;
 
@@ -11,6 +17,7 @@ export interface ProductInfo {
   description_en?: string;
   description_ar?: string;
   short_description?: string;
+  short_description_variants?: LanguageVariant[];
 
   category_id?: string | number;
 
@@ -21,8 +28,10 @@ export interface ProductInfo {
 
   slug?: string;
   
-  discount?: number
-  base_ref_price?: number
+  discount?: string
+  base_ref_price?:string,
+
+  attributes?: ProductAttribute[]
 }
 
 export interface ProductImage {
@@ -98,8 +107,8 @@ export interface Product extends ProductInfo {
   codes?: ProductCode[];
   seo?: ProductSeo;
   questions?: ProductQuestion[];
-  base_ref_price: number
-  attributes: ProductAttribute[]
+  base_ref_price?:string
+  attributes?: ProductAttribute[]
 }
 
 export interface ProductSeo {
@@ -124,7 +133,7 @@ export interface ProductPrice {
   dzd: string | number;
   egp: string | number;
   imx: string | number;
-  discount?: number | string;
+  discount?: string;
 }
 
 export interface AllProduct {
