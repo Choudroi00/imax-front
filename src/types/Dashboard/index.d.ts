@@ -80,6 +80,11 @@ export interface ProductAttribute extends ProductAttributeInfo{
   variants: ProductVariant[]
 
 }
+export interface ProductAttributeWithTitles extends ProductAttribute {
+  title_en?: string;
+  title_fr?: string;
+  title_ar?: string;
+}
 
 export interface ProductAttributeInfo {
   name: string
