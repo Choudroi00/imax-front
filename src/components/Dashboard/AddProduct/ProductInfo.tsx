@@ -266,6 +266,7 @@ export const ProductInfo = ({
           <div>
 
             <button
+            title="n"
                 type={"button"}
                 onClick={handleAddAttribute}
                 className="p-3 hover:bg-slate-100 mb-4  ease-in text-gray-700 duration-150 rounded-xl transition">
@@ -302,6 +303,7 @@ export const ProductInfo = ({
                           </select>
 
                           <button
+                          title="n"
                               type={"button"}
                               onClick={(e)=>handleRemoveAttribute(attrIndex)}
                               className="p-3 hover:bg-slate-100 ease-in text-gray-700 duration-150 rounded-xl transition">
@@ -314,6 +316,7 @@ export const ProductInfo = ({
                             Add Variant
                           </div>
                           <button
+                          title="n"
                               type={"button"}
                               onClick={(e)=>handleAddVariation(attrIndex)}
                               className="p-3 ms-4 duration-150 rounded-xl transition text-gray-700 hover:bg-slate-100 ease-in">
@@ -351,6 +354,7 @@ export const ProductInfo = ({
                                     />
 
                                     <button
+                                    title="n"
                                         type="button"
                                         onClick={(e) => {
                                           handleRemoveVariation(attrIndex,varIndex)
@@ -366,6 +370,7 @@ export const ProductInfo = ({
                                       Translations
                                     </h2>
                                     <button
+                                    title="n"
                                         type="button"
                                         onClick={(e) => {
                                           handleAddTranslation(attrIndex,varIndex)
@@ -399,6 +404,7 @@ export const ProductInfo = ({
                                             />
 
                                             <button
+                                            title="n"
                                                 type="button"
                                                 onClick={(e) => {
                                                   handleRemoveTranslation(attrIndex,varIndex,transIndex)
@@ -429,8 +435,8 @@ export const ProductInfo = ({
     )
   }
 
-  const onSubmit = () => {
-
+  const onSubmit = (event) => {
+    event.preventDefault();
   }
 
   // const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {

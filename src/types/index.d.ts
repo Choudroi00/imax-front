@@ -47,16 +47,46 @@ export interface Category {
 
 export interface Product {
   id: number | string;
+
   slug: string;
+
   title_en: string;
   title_ar: string;
   title_fr: string;
+
   description_en: string;
   description_fr: string;
   description_ar: string;
+  
   image: string;
   availability: string;
-  prices: ProductPrice;
+
+  discount?: number
+  base_ref_price?: string
+  
+  
+  
+}
+
+export interface ProductVariant {
+  id: number
+  name: string
+  name_variants: LanguageVariant[] | undefined
+  attr_id: number
+  product_id: number | undefined
+  price: string
+}
+export interface ProductAttribute extends ProductAttributeInfo{
+
+  variants: ProductVariant[]
+
+}
+
+export interface ProductAttributeInfo {
+  id?: number
+  name: string
+  name_variants: LanguageVariant[] | undefined
+
 }
 
 export interface ProductDetails extends ProductInfo {
@@ -64,7 +94,7 @@ export interface ProductDetails extends ProductInfo {
   inputs: ProductInput[];
   seo: ProductSeo;
   questions: ProductQuestion[];
-  prices: ProductPrice;
+  attributes: ProductAttribute[];
   comments: number;
   category: Category;
   rate: number;

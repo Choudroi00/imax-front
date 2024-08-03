@@ -66,38 +66,18 @@ export const ProductCard = ({ product }: { product: Product }) => {
             </Link>
           </p>
           <div className="flex mt-3 items-center w-full">
-            {product.prices.discount ? (
+            {product.discount ? (
               <div className="flex gap-2 items-center">
                 <del className="text-black/60 text-xs font-medium">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency,
-                  }).format(
-                    Number(product.prices[currency as keyof ProductPrice])
-                  )}
+                  {product.base_ref_price}
                 </del>
                 <span className="text-black/85 text-lg font-semibold">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency,
-                  }).format(
-                    Number(product.prices[currency as keyof ProductPrice]) -
-                      (Number(product.prices.discount) *
-                        Number(
-                          product.prices[currency as keyof ProductPrice]
-                        )) /
-                        100
-                  )}
+                  {product.base_ref_price}
                 </span>
               </div>
             ) : (
               <span className="text-black/85 text-lg font-semibold">
-                {new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency,
-                }).format(
-                  Number(product.prices[currency as keyof ProductPrice])
-                )}
+                {product.base_ref_price}
               </span>
             )}
           </div>

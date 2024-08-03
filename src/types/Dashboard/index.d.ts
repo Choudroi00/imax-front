@@ -2,19 +2,27 @@ import { Category, ProductReviews } from "..";
 
 export interface ProductInfo {
   id?: number | string;
+
   title_en?: string;
   title_ar?: string;
   title_fr?: string;
+
   description_fr?: string;
   description_en?: string;
   description_ar?: string;
+  short_description?: string;
+
   category_id?: string | number;
+
   type?: string;
   type_en?: string;
   type_ar?: string;
   type_fr?: string;
+
   slug?: string;
-  short_description;
+  
+  discount?: number
+  base_ref_price?: number
 }
 
 export interface ProductImage {
