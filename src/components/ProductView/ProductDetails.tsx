@@ -256,9 +256,9 @@ export const ProductDetails = ({
                       {product.comments} {t("comments")}
                     </span>
                   </div>
-                  {Number(product.prices.discount) > 0 && (
+                  {Number(product.discount) > 0 && (
                     <span className="text-red-500 text-lg font-normal">
-                      -{product.prices.discount}%
+                      -{product.discount}%
                     </span>
                   )}
                 </div>
@@ -381,42 +381,18 @@ export const ProductDetails = ({
                     </span>
                   </Button>
                   <div className="flex py-3 px-10 justify-center items-center rounded-md border border-neutral-200 w-full">
-                    {product.prices.discount ? (
+                    {product.discount ? (
                       <div className="flex gap-2 items-center">
                         <del className="text-neutral-500 text-xs font-medium">
-                          {new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency,
-                          }).format(
-                            Number(
-                              product.prices[currency as keyof ProductPrice]
-                            )
-                          )}
+                          {product.base_ref_price}
                         </del>
                         <span className="text-neutral-700 text-lg font-medium">
-                          {new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency,
-                          }).format(
-                            Number(
-                              product.prices[currency as keyof ProductPrice]
-                            ) -
-                              (Number(product.prices.discount) *
-                                Number(
-                                  product.prices[currency as keyof ProductPrice]
-                                )) /
-                                100
-                          )}
+                        {product.base_ref_price}
                         </span>
                       </div>
                     ) : (
                       <span className="text-neutral-700 text-lg font-medium">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency,
-                        }).format(
-                          Number(product.prices[currency as keyof ProductPrice])
-                        )}
+                        {product.base_ref_price}
                       </span>
                     )}
                   </div>

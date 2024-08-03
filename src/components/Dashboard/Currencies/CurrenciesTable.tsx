@@ -54,7 +54,7 @@ export function CurrenciesTable() {
       ),
       cell: ({ row }) => (
         <span className="py-4 px-2 text-stone-950 text-xs font-normal font-['Lato']">
-          {JSON.parse( row.getValue("name_variants") ).length   } translation found : { (row.getValue("name_variants") as LanguageVariant[]).map((item:LanguageVariant)=>item.lang.toUpperCase()).join(', ') }
+          {JSON.parse( row.getValue("name_variants") ).length   } translation found : { (JSON.parse( row.getValue("name_variants") ) as LanguageVariant[]).map((item:LanguageVariant)=>item.lang.toUpperCase()).join(', ') }
         </span>
       ),
       

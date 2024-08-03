@@ -13,6 +13,7 @@ import {
 } from "@/types";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
+import { log } from "console";
 
 const Product = () => {
   const { slug } = useParams();
@@ -25,6 +26,8 @@ const Product = () => {
   };
 
   const { data, isLoading, mutate } = useSWR(link, fetcher);
+  console.log(data);
+  
   const { product }: { product: TypeProductDetails } = data ?? {};
   const { denominations }: { denominations: TypeProduct[] } = data ?? [];
 
