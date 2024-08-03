@@ -435,7 +435,7 @@ export const ProductInfo = ({
     )
   }
 
-  const onSubmit = (event) => {
+  const onSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
   }
 
