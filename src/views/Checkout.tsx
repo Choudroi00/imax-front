@@ -42,7 +42,7 @@ const Checkout = () => {
       method: string;
       coupon?: string;
     } = {
-      currency,
+      currency: currency?.name ?? 'dzd',
       method,
     };
 

@@ -58,7 +58,7 @@ export const WishlistCard = ({
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: currency?.name,
-            }).format(Number(product.prices[currency.name as keyof ProductPrice]))}
+            }).format(Number(product.prices[currency?.name as keyof ProductPrice]))}
           </span>
           <Button className="px-5 h-[45px] bg-blue-600 rounded-lg">
             <span className="text-center text-white text-lg font-medium">
