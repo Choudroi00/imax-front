@@ -20,7 +20,7 @@ export const Currencys = () => {
   const [currencies, setCurrs ] = useState<Currencies[]>() ;
 
   
-  const [link, setLink] = useState("/currencies");
+  const link = "/currencies";
 
   const fatcher = async () => {
     
@@ -38,6 +38,7 @@ export const Currencys = () => {
       
       
       setCurrs(currencies);
+      handleCurrencyChange(currencies[0].name)
 
       //localStorage.setItem("currency", JSON.stringify( currencies[0]) );
 
