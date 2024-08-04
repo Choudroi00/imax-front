@@ -1,14 +1,26 @@
-import React, { useState, useCallback } from 'react';
-import {ProductAttribute, ProductAttributeInfo} from "@/types/Dashboard";
+import React, { useState, useCallback, Dispatch, SetStateAction, useEffect } from 'react';
+import {ProductAttribute, ProductAttributeInfo, SaveVariant} from "@/types/Dashboard";
 import {AudioLinesIcon, MinusIcon, PlusIcon, XIcon} from "lucide-react";
+import { ProductVariant } from '@/types';
+import { set } from 'lodash';
 
 
 export interface AttributeViewProps{
     baseAttributes: ProductAttributeInfo[] | undefined
+    saveVariants: Dispatch<SetStateAction<SaveVariant[] | undefined>>
+    baseVariants?: ProductAttribute[]
+    saveAttributes?: Dispatch<SetStateAction<ProductAttribute[] | undefined>>
 }
 
-const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
-    const [attributes, setAttributes] = useState<ProductAttribute[] | undefined>([]);
+const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes, saveVariants,saveAttributes,baseVariants}) => {
+    /**
+     * TODO : - add the prev state 
+     *        - in case of an update we still need the the id , so think how u can add it 
+     */
+
+    
+
+    const [attributes, setAttributes] = useState<ProductAttribute[] | undefined>(baseVariants ?? []);
 
     const handleAddAttribute = useCallback(() => {
         setAttributes((prevState) => prevState ? [
@@ -31,17 +43,24 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                 index === attrId
                     ? {
                         ...item,
-                        variants: [
+                        variants: item.variants ? [
                             ...item.variants,
                             {
-                                id: item.variants.length,
+                                
                                 product_id: 0,
                                 name: '',
                                 price: '',
                                 attr_id: 0,
                                 name_variants: [],
                             },
-                        ],
+                        ] : [{
+                                
+                            product_id: 0,
+                            name: '',
+                            price: '',
+                            attr_id: 0,
+                            name_variants: [],
+                        }],
                     }
                     : item
             ): []
@@ -54,7 +73,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                 index === attrId
                     ? {
                         ...item,
-                        variants: item.variants.filter((_, varIndex) => varIndex !== id),
+                        variants: item.variants ? item.variants.filter((_, varIndex) => varIndex !== id) : [] ,
                     }
                     : item
             ) : []
@@ -67,7 +86,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                 attrIndex === attrId
                     ? {
                         ...attrItem,
-                        variants: attrItem.variants.map((varItem, varIndex) =>
+                        variants:attrItem.variants ? attrItem.variants.map((varItem, varIndex) =>
                             varIndex === varId
                                 ? {
                                     ...varItem,
@@ -77,7 +96,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                                     ]: [],
                                 }
                                 : varItem
-                        ),
+                        ) : [],
                     }
                     : attrItem
             ): []
@@ -90,7 +109,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                 attrIndex === attrId
                     ? {
                         ...attrItem,
-                        variants: attrItem.variants.map((varItem, varIndex) =>
+                        variants:  attrItem.variants ?  attrItem.variants.map((varItem, varIndex) =>
                             varIndex === varId
                                 ? {
                                     ...varItem,
@@ -99,11 +118,13 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                                     ):[],
                                 }
                                 : varItem
-                        ),
+                        ) : [],
                     }
                     : attrItem
             ):[]
         );
+
+        
     }, []);
 
     const handleAttributeChange = useCallback((id:number, change: string) => {
@@ -121,9 +142,9 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                     ? attribute
                     : {
                         ...attribute,
-                        variants: attribute.variants.map((variant, varIndex) =>
+                        variants: attribute .variants ? attribute.variants.map((variant, varIndex) =>
                             varIndex !== id ? variant : { ...variant, name: change }
-                        ),
+                        ) : [],
                     }
             ): []
         );
@@ -136,11 +157,11 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                     ? attribute
                     : {
                         ...attribute,
-                        variants: attribute.variants.map((variant, varIndex) =>
+                        variants: attribute.variants?.map((variant, varIndex) =>
                             varIndex !== id
                                 ? variant
                                 : { ...variant, price: change }
-                        ),
+                        ) ?? [],
                     }
             ):[]
         );
@@ -154,7 +175,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                         ? attribute
                         : {
                             ...attribute,
-                            variants: attribute.variants.map((variant, varIndex) =>
+                            variants: attribute.variants?.map((variant, varIndex) =>
                                 varIndex !== varId
                                     ? variant
                                     : {
@@ -183,7 +204,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
                         ? attribute
                         : {
                             ...attribute,
-                            variants: attribute.variants.map((variant, varIndex) =>
+                            variants: attribute.variants?.map((variant, varIndex) =>
                                 varIndex !== varId
                                     ? variant
                                     : {
@@ -203,6 +224,46 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes}) => {
         },
         []
     );
+
+    useEffect(()=>{
+        // saveVariants((prevState: SaveVariant[] | undefined) : SaveVariant[]=>{
+        //     return !prevState ? attributes?.map((attrItem)=>{
+        //         return attrItem.variants?.map((varItem) : SaveVariant=>{
+        //             return {
+        //                 id: varItem.id,
+        //                 attr_id: baseAttributes?.find((bItem)=> bItem.name === attrItem.name)?.id ?? 0,
+        //                 name: varItem.name,
+        //                 price: varItem.price,
+        //                 name_variants: varItem.name_variants
+
+        //             }
+        //         }) as SaveVariant
+        //     }) as SaveVariant[] ?? [] : [
+        //         ...prevState,
+        //         ...attributes?.map((attrItem)=>{
+        //             return attrItem.variants?.map((varItem) : SaveVariant=>{
+        //                 return {
+        //                     id: varItem.id,
+        //                     attr_id: baseAttributes?.find((bItem)=> bItem.name === attrItem.name)?.id ?? 0,
+        //                     name: varItem.name,
+        //                     price: varItem.price,
+        //                     name_variants: varItem.name_variants
+    
+        //                 }
+        //             }) as SaveVariant
+        //         }) as SaveVariant[] ?? []
+        //     ]
+        // }) 
+        
+        if(saveAttributes) {saveAttributes(attributes ? attributes : []);}
+    },attributes)
+
+    useEffect(()=>{
+        console.log(attributes);
+        
+    })
+
+    
 
     return (
         <div className="flex flex-col mt-6">

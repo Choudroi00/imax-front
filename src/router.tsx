@@ -30,6 +30,7 @@ import CheckoutSuccess from "./views/CheckoutSuccess";
 import OrderView from "./views/Dashboard/OrderView";
 import Coupons from "./views/Dashboard/Coupons";
 import Currencies from "./views/Dashboard/Currencies";
+import Attributes from "./views/Dashboard/Attributes";
 
 const router = createBrowserRouter([
   {
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
           {
             path: "dashboard/products/:slug",
             element: <ProductDasboard />,
+          },
+          {
+            path:"dashboard/attributes",
+            element: <Attributes />
           },
           {
             path: "dashboard/feedback",

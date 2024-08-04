@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {Dispatch, SetStateAction, useCallback, useMemo, useState} from "react";
+import {Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState} from "react";
 import { FormGroup } from "../ui/FormGroup";
 import { SelectCategory } from "./SelectCategory";
 import { ProductImage } from "./ProductImage";
@@ -8,6 +8,7 @@ import {
   type Product,
   type ProductImage as TypeImage,
   ProductPrice, ProductAttribute, ProductAttributeInfo, ProductVariant, LanguageVariant,
+  SaveVariant,
 } from "@/types/Dashboard";
 import { SelectType } from "./SelectType";
 import {AudioLinesIcon, MinusIcon, Plane, PlusIcon, XIcon} from "lucide-react";
@@ -35,405 +36,17 @@ export const ProductInfo = ({
 
   const [productInfo, setProductInfo] = useState<TypeProduct | undefined>(product ?? undefined);
 
-  // const [discount, setDiscount] = useState(price?.discount ?? 0);
+  //const [discount, setDiscount] = useState(price?.discount ?? 0);
 
   const [attributes,setAttributes] = useState<ProductAttribute[] | undefined >( product?.attributes )
 
 
+  const [savedAttributes, saveAttribute] = useState<SaveVariant[] | undefined >()
+  const [savedAttsCopy, setAttrCopy] = useState<ProductAttribute[] | undefined>(product?.attributes)
 
-  const handleAddAttribute = () => {
-    setAttributes((prevState : ProductAttribute[] | undefined) : ProductAttribute[] => {
-      if (prevState){
-        return [...prevState, {
-          name:baseAttributes ? baseAttributes[0].name : '',
-          name_variants:baseAttributes ? baseAttributes[0].name_variants : [] as LanguageVariant[],
-          variants:[] as ProductVariant[]
+  
 
-        } ]
-      }else{
-        return [{
-          name:baseAttributes ? baseAttributes[0].name : '',
-          name_variants:baseAttributes ? baseAttributes[0].name_variants : [] as LanguageVariant[],
-          variants:[] as ProductVariant[]
-
-        }]
-      }
-    })
-  }
-  const handleRemoveAttribute = (id:number)=> {
-    setAttributes((prevState: ProductAttribute[] | undefined): ProductAttribute[]=>{
-      return prevState ? [...prevState?.filter((item,index)=> index !== id)] : []
-    })
-  }
-
-  const handleAddVariation = (attrId: number)=>{
-    setAttributes((prevState: ProductAttribute[] | undefined) : ProductAttribute[]=>{
-      if (prevState){
-        return [
-          ...prevState.map((item,index):ProductAttribute=>{
-            if (index === attrId) {
-              return {
-                name: item.name,
-                name_variants: item.name_variants,
-                variants: [...item.variants, {id: item.variants.length, product_id: 0 ,name: '', price: '', attr_id: 0, name_variants: [],}]
-              }
-            }
-            return item
-          }),
-
-        ]
-      }else{
-        return []
-      }
-    })
-  }
-  const handleRemoveVariation = (attrId: number, id: number)=>{
-    setAttributes((prevState: ProductAttribute[] | undefined): ProductAttribute[] =>{
-      if(prevState){
-        return [
-          ...prevState.map((item :ProductAttribute, index: number) : ProductAttribute=>{
-            if (index === attrId){
-              return {
-                name: item.name,
-                name_variants: item.name_variants,
-                variants: item.variants.filter((itm : ProductVariant, ind: number)=> {
-                  return ind !== id
-                })
-              }
-            }
-
-            return item
-          })
-        ]
-      }else {
-        return []
-      }
-
-    })
-  }
-
-  const handleAddTranslation = (attrId: number, varId: number)=>{
-    setAttributes((prevState: ProductAttribute[] | undefined) : ProductAttribute[] => {
-      if (prevState){
-        return [
-          ...prevState.map((attrItem: ProductAttribute, attrIndex: number): ProductAttribute =>{
-            if (attrIndex === attrId){
-              return {
-                ...attrItem,
-                variants: attrItem.variants.map((varItem : ProductVariant, varIndex): ProductVariant =>{
-                  if(varIndex === varId){
-                    return {
-                      ...varItem,
-                      name_variants: varItem.name_variants ? [...varItem.name_variants,{name: '',lang: 'en'}] : [{name:'',lang:''}]
-                    }
-                  }
-                  return varItem
-                })
-              }
-            }
-            return attrItem
-          })
-        ]
-      }else{
-        return []
-      }
-    })
-  }
-  const handleRemoveTranslation = (attrId: number,varId: number, id:number) => {
-    setAttributes((prevState: ProductAttribute[] | undefined) : ProductAttribute[] => {
-      if (prevState){
-        return [
-          ...prevState.map((attrItem: ProductAttribute, attrIndex: number): ProductAttribute =>{
-            if (attrIndex === attrId){
-              return {
-                ...attrItem,
-                variants: attrItem.variants.map((varItem : ProductVariant, varIndex): ProductVariant =>{
-                  if(varIndex === varId){
-                    return {
-                      ...varItem,
-                      name_variants: varItem.name_variants?.filter((translation: LanguageVariant, transIndex:number)=> transIndex !== id)
-                    }
-                  }
-                  return varItem
-                })
-              }
-            }
-            return attrItem
-          })
-        ]
-      }else{
-        return []
-      }
-    })
-  }
-
-  const handleAttributeChange = (id: number, change: string)=>{
-    setAttributes((prevState:ProductAttribute[] | undefined): ProductAttribute[]=>{
-      return !prevState ? [] : [
-        ...prevState.map((attribute,attrIndex)=>{
-          return id === attrIndex ? {
-            ...attribute,
-            name: change,
-          } : attribute
-        }),
-
-      ]
-    })
-  }
-  const handleVariantNameChange = (attrId: number, id: number, change: string) => {
-    setAttributes((prevState: ProductAttribute[] | undefined): ProductAttribute[]=>{
-      return !prevState ? [] : [
-        ...prevState.map((attribute, attrIndex ) : ProductAttribute=>{
-          return attrId !== attrIndex ? attribute : {
-            ...attribute,
-            variants: [...attribute.variants.map((variant: ProductVariant, varIndex: number)=>{
-              return varIndex !== id ? variant : {
-                ...variant,
-                name:change,
-
-              }
-            })]
-          }
-        })
-      ]
-    })
-  }
-  const handleVariantPriceChange = (attrId: number, id: number, change: string)=> {
-    setAttributes((prevState: ProductAttribute[] | undefined): ProductAttribute[]=>{
-      return !prevState ? [] : [
-        ...prevState.map((attribute, attrIndex ) : ProductAttribute=>{
-          return attrId !== attrIndex ? attribute : {
-            ...attribute,
-            variants: [...attribute.variants.map((variant: ProductVariant, varIndex: number):ProductVariant=>{
-              return varIndex !== id ? variant : {
-                ...variant,
-                price: change ,
-
-              }
-            })]
-          }
-        })
-      ]
-    })
-  }
-  const handleVariantTranslationLangChange = useCallback((attrId: number, varId: number,id: number , change: string) => {
-    setAttributes((prevState: ProductAttribute[] | undefined): ProductAttribute[]=>{
-      return !prevState ? [] : [
-        ...prevState.map((attribute, attrIndex ) : ProductAttribute=>{
-          return attrId !== attrIndex ? attribute : {
-            ...attribute,
-            variants: [...attribute.variants.map((variant: ProductVariant, varIndex: number)=>{
-              return varIndex !== varId ? variant : {
-                ...variant,
-                name_variants: variant.name_variants ?  [...variant.name_variants.map((translation,transIndex)=> transIndex === id ? {...translation,lang: change} : translation )]  : [],
-
-              }
-            })]
-          }
-        })
-      ]
-    })
-  },[])
-  const handleVariantTranslationTranslationChange = (attrId: number, varId: number,id: number , change: string) => {
-    setAttributes((prevState: ProductAttribute[] | undefined): ProductAttribute[]=>{
-      return !prevState ? [] : [
-        ...prevState.map((attribute, attrIndex ) : ProductAttribute=>{
-          return attrId !== attrIndex ? attribute : {
-            ...attribute,
-            variants: [...attribute.variants.map((variant: ProductVariant, varIndex: number)=>{
-              return varIndex !== varId ? variant : {
-                ...variant,
-                name_variants: variant.name_variants ?  [...variant.name_variants.map((translation,transIndex)=> transIndex === id ? {...translation,name: change} : translation )]  : [],
-
-              }
-            })]
-          }
-        })
-      ]
-    })
-  }
-
-  const AttributesView2 = ()=>{
-
-
-
-
-
-
-
-    return (
-        <div className="flex flex-col mt-6">
-          <div>
-
-            <button
-            title="n"
-                type={"button"}
-                onClick={handleAddAttribute}
-                className="p-3 hover:bg-slate-100 mb-4  ease-in text-gray-700 duration-150 rounded-xl transition">
-              <AudioLinesIcon className=" text-gray-400"/>
-            </button>
-          </div>
-          {
-            attributes?.map((item, attrIndex) => {
-              return (
-                  <div key={attrIndex} className="w-full mb-4 flex flex-col">
-                    <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type">
-                      Attribute : {item.name}
-                    </label>
-
-                    <div className="flex flex-col">
-                      <div className="rounded-t-xl w-full bg-slate-50 flex flex-col">
-                        <div className={"flex flex-row"} >
-
-                          <select
-                              id="type"
-                              name="type"
-                              onChange={({target: {value}})=>handleAttributeChange(attrIndex,value)}
-                              className="appearance-none bg-transparent rounded-xl w-full py-4 me-4 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-
-                            <option value={item.name}>{item.name}</option>
-                            {baseAttributes?.map((attr, index) => {
-                              return (
-                                  <option key={index}  value="ref">{attr.name}</option>
-                              )
-                            })}
-
-                          </select>
-
-                          <button
-                          title="n"
-                              type={"button"}
-                              onClick={(e)=>handleRemoveAttribute(attrIndex)}
-                              className="p-3 hover:bg-slate-100 ease-in text-gray-700 duration-150 rounded-xl transition">
-                            <XIcon className=" text-gray-400"/>
-                          </button>
-                        </div>
-
-                        <div className={"flex justify-items-center flex-row px-4"} >
-                          <div className={"text-gray-800 flex flex-col justify-items-center items-center justify-center"} >
-                            Add Variant
-                          </div>
-                          <button
-                          title="n"
-                              type={"button"}
-                              onClick={(e)=>handleAddVariation(attrIndex)}
-                              className="p-3 ms-4 duration-150 rounded-xl transition text-gray-700 hover:bg-slate-100 ease-in">
-                            <PlusIcon className=" text-gray-400"/>
-                          </button>
-                        </div>
-
-                      </div>
-
-                      <div className="rounded-b-xl bg-slate-50 ms-4 pe-4 flex flex-row">
-                        <div className="rounded-full bg-slate-200 w-[5px]"></div>
-
-                        <div className={"flex flex-col"} >
-                          {item.variants.map((variant, varIndex) => {
-                            return (
-                                <div key={varIndex} className="ps-5 flex-1 py-5 flex flex-col">
-                                  <div className="flex gap-4">
-                                    <input
-                                        type="text"
-                                        autoComplete={"off"}
-                                        name={`variant_name`}
-                                        placeholder="Name"
-                                        value={attributes[attrIndex].variants[varIndex].name}
-                                        onChange={({target : {value}})=>handleVariantNameChange(attrIndex,varIndex,value)}
-                                        className=" appearance-none border rounded-xl py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:-outline"
-                                    />
-                                    <input
-                                        type="text"
-                                        autoComplete={"off"}
-                                        name={`price`}
-                                        placeholder="Price"
-                                        value={attributes[attrIndex].variants[varIndex].price}
-                                        onChange={(e)=>handleVariantPriceChange(attrIndex,varIndex,e.target.value)}
-                                        className=" appearance-none border rounded-xl py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    />
-
-                                    <button
-                                    title="n"
-                                        type="button"
-                                        onClick={(e) => {
-                                          handleRemoveVariation(attrIndex,varIndex)
-                                        }}
-                                        className="p-3 hover:bg-slate-100 ease-in duration-150 rounded-xl transition">
-                                      <MinusIcon className=" text-gray-400"/>
-                                    </button>
-                                  </div>
-
-
-                                  <div className={"flex ps-8"}>
-                                    <h2 className="mt-4 mb-4 me-24 text-gray-600">
-                                      Translations
-                                    </h2>
-                                    <button
-                                    title="n"
-                                        type="button"
-                                        onClick={(e) => {
-                                          handleAddTranslation(attrIndex,varIndex)
-                                        }}
-                                        className="p-3 ms-24 hover:bg-slate-100 ease-in duration-150 rounded-xl transition"
-                                    >
-                                      <PlusIcon className=" text-gray-400"/>
-                                    </button>
-                                  </div>
-                                  {
-                                    variant.name_variants?.map((translation, transIndex)=>{
-                                      return (
-                                          <div className="flex ps-8 gap-4">
-                                            <input
-                                                key={`langname.${transIndex}`}
-                                                type="text"
-                                                name={``}
-                                                placeholder="Language"
-                                                value={translation.lang}
-                                                onChange={(e)=>handleVariantTranslationLangChange(attrIndex,varIndex,transIndex,e.target.value)}
-                                                className=" appearance-none border rounded-xl py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:-outline"
-                                            />
-                                            <input
-                                                key={`trans.${transIndex}`}
-                                                type="text"
-                                                name={``}
-                                                placeholder="Translation"
-                                                value={translation.name}
-                                                onChange={(e)=>handleVariantTranslationTranslationChange(attrIndex,varIndex,transIndex,e.target.value)}
-                                                className=" appearance-none border rounded-xl py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            />
-
-                                            <button
-                                            title="n"
-                                                type="button"
-                                                onClick={(e) => {
-                                                  handleRemoveTranslation(attrIndex,varIndex,transIndex)
-                                                }}
-                                                className="p-3 hover:bg-slate-100 ease-in duration-150 rounded-xl transition"
-                                            >
-                                              <MinusIcon className=" text-gray-400"/>
-                                            </button>
-                                          </div>
-                                      )
-                                    })
-                                  }
-
-
-                                </div>
-                            )
-                          })}
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-              )
-            })
-          }
-
-        </div>
-    )
-  }
+  
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -454,7 +67,14 @@ export const ProductInfo = ({
       base_ref_price: formData.get('base_ref_price')?.toString() ?? "0",
       short_description: formData.get("short_description")?.toString() ?? "",
       discount: formData.get("discount")?.toString() ?? "0",
-      attributes,
+      variants: savedAttsCopy?.flatMap((item)=>{
+        return item.variants?.map((itm) : ProductVariant=>{
+          return {
+            ...itm,
+            price: String(itm.price)
+          }
+        })
+      }) as SaveVariant[] ,
       
       short_description_variants: [
         {
@@ -466,21 +86,27 @@ export const ProductInfo = ({
           lang: 'ar'
         },
 
-      ]
+      ],
+
+      attributes: savedAttsCopy
 
 
     }
 
+    console.log(product.attributes);
+    
+
     setProductInfo(product)
+    
 
     setProduct((old)=> old ? {
       ...old,
       ...product,
-      attributes,
+      
       images
     }: {
       ...product,
-      attributes,
+      
       images
     })
 
@@ -676,7 +302,7 @@ export const ProductInfo = ({
         <h5 className="text-neutral-400 text-lg font-semibold font-['Lato']">
           Attributes
         </h5>
-        <AttributesView baseAttributes={baseAttributes} />
+        <AttributesView baseVariants={product?.attributes} saveAttributes={setAttrCopy} saveVariants={saveAttribute} baseAttributes={baseAttributes} />
 
 
         <div className="mt-6">
