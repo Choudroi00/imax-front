@@ -318,7 +318,7 @@ const AttributesView : React.FC<AttributeViewProps>  = ({baseAttributes, saveVar
                         <div className="rounded-b-xl bg-slate-50 ps-10 pe-4 flex flex-row">
                             <div className="rounded-full bg-slate-200 w-[5px]"></div>
                             <div className={"flex flex-col"} >
-                                {item.variants.map((variant, varIndex) => (
+                                {item.variants?.map((variant, varIndex) => (
                                     <div key={varIndex} className="ps-5 flex-1 py-5 flex flex-col">
                                         <div className="flex gap-4">
                                             <input
