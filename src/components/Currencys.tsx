@@ -27,6 +27,7 @@ export const Currencys = () => {
   };
 
   useEffect(()=>{
+    if(!currency?.name){
 
     const fet = async () =>{
       const response = await axiosClient.get(link);
@@ -35,6 +36,8 @@ export const Currencys = () => {
       
       
       setCurrs(currencies);
+
+    }
       
       
     }
