@@ -3,7 +3,13 @@ import { Category, ProductReviews } from "..";
 
 
 
-
+export interface SaveVariant {
+  id?: number
+  attr_id?: number,
+  name?: string,
+  price?: string,
+  name_variants?: LanguageVariant[]
+}
 
 
 export interface ProductInfo {
@@ -31,7 +37,8 @@ export interface ProductInfo {
   discount?: string
   base_ref_price?:string,
 
-  attributes?: ProductAttribute[]
+  attributes?: ProductAttribute[],
+  variants?: SaveVariant[]
 }
 
 export interface ProductImage {
@@ -77,23 +84,35 @@ interface Option {
 
 
 export interface ProductVariant {
-  id: number
-  name: string
-  name_variants: LanguageVariant[] | undefined
-  attr_id: number
-  product_id: number | undefined
-  price: string
+  id?: number
+  name?: string
+  name_variants?: LanguageVariant[] | undefined
+  attr_id?: number
+  product_id?: number | undefined
+  price?: string
 }
 export interface ProductAttribute extends ProductAttributeInfo{
 
-  variants: ProductVariant[]
+  variants?: ProductVariant[],
+  
 
 }
 
 export interface ProductAttributeInfo {
-  name: string
-  name_variants: LanguageVariant[] | undefined
+  id?: number
+  name?: string
+  name_variants?: LanguageVariant[] | undefined
 
+}
+
+export interface Product extends ProductInfo {
+  images?: ProductImage[];
+  inputs?: ProductInput[];
+  codes?: ProductCode[];
+  seo?: ProductSeo;
+  questions?: ProductQuestion[];
+  base_ref_price?:string
+  attributes?: ProductAttribute[]
 }
 
 export interface Product extends ProductInfo {
