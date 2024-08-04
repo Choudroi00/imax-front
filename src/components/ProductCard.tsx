@@ -11,8 +11,8 @@ export const ProductCard = ({ product }: { product: Product }) => {
   const { language } = i18n;
   const { currency } = useStateContext();
 
-  const curr = JSON.parse( localStorage.currency )
-  const rate = parseFloat(curr.value)
+  const curr = currency
+  const rate = parseFloat(curr.value ?? '0')
 
   //console.log(curr);
   
