@@ -16,6 +16,8 @@ export const WishlistCard = ({
   const { language } = i18n;
   const { currency } = useStateContext();
 
+  const productPrice = currency && product.prices ? product.prices[currency.name as keyof ProductPrice] : null;
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -36,17 +38,17 @@ export const WishlistCard = ({
                 to={"/shop/product/" + product.slug}
                 className="text-neutral-700 text-lg font-normal tracking-tight"
               >
-                {language == "en"
+                {language === "en"
                   ? product.title_en
-                  : language == "fr"
+                  : language === "fr"
                   ? product.title_fr
                   : product.title_ar}
               </Link>
               <p className="mt-3 text-zinc-500 text-sm font-normal">
                 CATEGORY:{" "}
-                {language == "en"
+                {language === "en"
                   ? product.category.category_en
-                  : language == "fr"
+                  : language === "fr"
                   ? product.category.category_fr
                   : product.category.category_ar}
               </p>
@@ -55,10 +57,12 @@ export const WishlistCard = ({
         </div>
         <div className="flex items-center gap-10">
           <span className="text-zinc-500 text-[22px] font-normal tracking-wide">
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: currency?.name,
-            }).format(Number(product.prices[currency?.name as keyof ProductPrice]))}
+            {currency && productPrice !== null
+              ? new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: currency.name,
+                }).format(Number(productPrice))
+              : "N/A"}
           </span>
           <Button className="px-5 h-[45px] bg-blue-600 rounded-lg">
             <span className="text-center text-white text-lg font-medium">

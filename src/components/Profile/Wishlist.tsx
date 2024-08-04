@@ -16,19 +16,18 @@ export const Wishlist = () => {
   const link = "/wishlists";
   const fetcher = async () => {
     const response = await axiosClient.get(link);
-
     return response.data;
   };
 
-  const { data, mutate, isLoading } = useSWR(link, fetcher);
-  const { wishlists }: { wishlists: WishlistType[] } = data ?? [];
+  const { data, mutate, isLoading, error } = useSWR(link, fetcher);
+  const wishlists: WishlistType[] = data?.wishlists ?? [];
 
   const handleDeleteProduct = (id: string | number) => {
     axiosClient
       .post("/wishlists/" + id)
       .then((response) => {
         toast("Success!", {
-          description: response.data.message || "Product Removed to wishlist",
+          description: response.data.message || "Product Removed from wishlist",
           className: "bg-green-600 border-0",
           action: {
             label: "Close",
@@ -48,6 +47,10 @@ export const Wishlist = () => {
         });
       });
   };
+
+  if (error) {
+    return <div>Error loading wishlists</div>;
+  }
 
   return (
     <TabsContent value="wishlist">
@@ -74,25 +77,24 @@ export const Wishlist = () => {
           ))}
         </div>
       )}
-      {!isLoading &&
-        (wishlists?.length > 0 ? (
-          <>
-            <h3 className="text-neutral-700 text-[28px] font-normal leading-[33.50px] tracking-wide">
-              {t("wishlist")}
-            </h3>
-            <div className="flex flex-col mt-10 gap-5">
-              {wishlists.map((product) => (
-                <WishlistCard
-                  key={product.id}
-                  product={product}
-                  handleDeleteProduct={handleDeleteProduct}
-                />
-              ))}
-            </div>
-          </>
-        ) : (
-          <WishlistEmpty />
-        ))}
+      {!isLoading && wishlists?.length > 0 ? (
+        <>
+          <h3 className="text-neutral-700 text-[28px] font-normal leading-[33.50px] tracking-wide">
+            {t("wishlist")}
+          </h3>
+          <div className="flex flex-col mt-10 gap-5">
+            {wishlists.map((product) => (
+              <WishlistCard
+                key={product.id}
+                product={product}
+                handleDeleteProduct={handleDeleteProduct}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        !isLoading && <WishlistEmpty />
+      )}
     </TabsContent>
   );
 };

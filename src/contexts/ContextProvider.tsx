@@ -9,7 +9,7 @@ const defaultState: DefaultState = {
   userEmail: null,
   setUserToken: () => {},
   setUserEmail: () => {},
-  currency: {name: "usd"},
+  currency: { name: "usd" },
   setCurrency: () => {},
 };
 
@@ -22,14 +22,20 @@ export const ContextProvider = ({
 }) => {
   const [currentUser, _setCurrentUser] = useState({});
 
-  const cu = {
+  const defaultCurrency = {
     name: 'dzd',
     value: '200'
+  };
+
+  let storedCurrency;
+  try {
+    storedCurrency = JSON.parse(localStorage.getItem("currency") || JSON.stringify(defaultCurrency));
+  } catch (error) {
+    console.error("Invalid JSON in local storage for 'currency'. Using default value.", error);
+    storedCurrency = defaultCurrency;
   }
 
-  const [currency, setCurrency] = useState<Currencies | undefined>(
-    JSON.parse( localStorage.getItem("currency")?? JSON.stringify(cu)) 
-  );
+  const [currency, setCurrency] = useState<Currencies | undefined>(storedCurrency);
   const [userToken, _setUserToken] = useState<string | null>(
     localStorage.getItem("TOKEN") || ""
   );

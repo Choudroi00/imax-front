@@ -149,7 +149,9 @@ export const ProductDetails = ({
 
   const sumVariants = () : number => {
     const prices = product.attributes.map((attr) : number=> {
-      const n = parseFloat(attr.variants.find((variant)=> variants.find((nvariant)=> nvariant.id === variant.id )  )?.price ?? '0')
+      const price = attr.variants.find((variant) => variants.find((nvariant) => nvariant.id === variant.id))?.price;
+      const n = price ? parseFloat(price) : 0;
+
       console.log(n);
       
       return n
@@ -157,7 +159,7 @@ export const ProductDetails = ({
     console.log(prices);
     
 
-    const totale = prices.reduce((acc, current)=> acc + current)
+    const totale = prices.length > 0 ? prices.reduce((acc, current) => acc + current) : 0;
 
     return totale
 
@@ -167,7 +169,9 @@ export const ProductDetails = ({
 
   useEffect(()=> {
     const prices = product.attributes.map((attr) : number=> {
-      const n = parseFloat(attr.variants.find((variant)=> variants.find((nvariant)=> nvariant.id === variant.id )  )?.price ?? '0')
+      const price = attr.variants.find((variant) => variants.find((nvariant) => nvariant.id === variant.id))?.price;
+      const n = price ? parseFloat(price) : 0;
+
       console.log(n);
       
       return n
@@ -175,7 +179,8 @@ export const ProductDetails = ({
     console.log(prices);
     
 
-    const totale = prices.reduce((acc, current)=> acc + current)
+    const totale = prices.length > 0 ? prices.reduce((acc, current) => acc + current) : 0;
+
     setTotalePrice((parseFloat((product.base_ref_price ?? '0')) + totale) * rate)
     console.log(totale_price);
     
