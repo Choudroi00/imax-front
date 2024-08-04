@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Thumbs } from "swiper/modules";
 import type { Swiper as TypeSwiper } from "swiper/types";
@@ -24,6 +24,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@radix-ui/react-dropdown-menu";
+import { log } from "console";
 
 export const ProductDetails = ({
   product,
@@ -44,6 +45,11 @@ export const ProductDetails = ({
   const [loading, setLoading] = useState(false);
   const [loadingWishlist, setLoadingWishlist] = useState(false);
 
+  
+
+  const curr = currency
+  const rate = parseFloat(curr?.value ?  curr.value : '1')
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -52,24 +58,7 @@ export const ProductDetails = ({
     const formData = new FormData(event.currentTarget);
     const dataInput: any[] = [];
 
-    formData.forEach((value, key) => {
-      dataInput.push({ key, value });
-
-      if (!value) {
-        hasError = true;
-        toast("Error!", {
-          description: `Please enter a value for the "${key}" field.`,
-          className: "bg-red-600 border-0",
-          action: {
-            label: "Close",
-            onClick: () => {},
-          },
-        });
-      }
-    });
-
-    if (!hasError) {
-      const data = { product_id: product.id, data: JSON.stringify(dataInput) };
+    const data = { product_id: product.id, data: JSON.stringify(variants) };
       setLoading(true);
 
       axiosClient
@@ -97,7 +86,6 @@ export const ProductDetails = ({
         .finally(() => {
           setLoading(false);
         });
-    }
   };
 
   const handleAddToWishlist = () => {
@@ -132,12 +120,66 @@ export const ProductDetails = ({
   };
 
   //DISCOUNT
-  const baseRefPrice = Number(product.base_ref_price) * Number(currency?.value);
+  //const baseRefPrice = Number(product.base_ref_price) * Number(currency?.value);
   const discount = Number(product.discount);
-  console.log(product.base_ref_price);
+  
 
   // Calculate the price before discount
-  const prixAvantDiscount = ((baseRefPrice + discount) * baseRefPrice) / 100;
+  //const prixAvantDiscount = ((baseRefPrice + discount) * baseRefPrice) / 100;
+
+  const [variants,setVariants] = useState(product.attributes.map((attr,index)=>{
+    return {
+      attr_id: index,
+      id: attr.variants[0].id
+    }
+  }))
+
+  //console.log(variants);
+  
+
+  const handleVariantsChange = (attr_id, id)=>{
+    setVariants((prevState)=>{
+      return [...prevState.map((item)=>{
+          return item.attr_id === attr_id ? {...item, id: Number( id )} : item
+        })]
+      
+    })
+    
+  }
+
+  const sumVariants = () : number => {
+    const prices = product.attributes.map((attr) : number=> {
+      const n = parseFloat(attr.variants.find((variant)=> variants.find((nvariant)=> nvariant.id === variant.id )  )?.price ?? '0')
+      console.log(n);
+      
+      return n
+    }  )
+    console.log(prices);
+    
+
+    const totale = prices.reduce((acc, current)=> acc + current)
+
+    return totale
+
+  }
+
+  const [totale_price,setTotalePrice] = useState( parseFloat((product.base_ref_price ?? '0') + sumVariants()) * rate)
+
+  useEffect(()=> {
+    const prices = product.attributes.map((attr) : number=> {
+      const n = parseFloat(attr.variants.find((variant)=> variants.find((nvariant)=> nvariant.id === variant.id )  )?.price ?? '0')
+      console.log(n);
+      
+      return n
+    }  )
+    console.log(prices);
+    
+
+    const totale = prices.reduce((acc, current)=> acc + current)
+    setTotalePrice((parseFloat((product.base_ref_price ?? '0')) + totale) * rate)
+    console.log(totale_price);
+    
+  }, variants)
   return (
     <section className="py-14">
       <Toaster />
@@ -273,34 +315,34 @@ export const ProductDetails = ({
                         </span>
                         {/* Display the price before discount */}
                         <div className="text-neutral-700 text-lg font-medium">
-                          Product Price: {product.base_ref_price}
+                          Product Price: {totale_price}
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col gap-4">
-                  {product.attributes?.map((attribute) => {
+                  {product.attributes?.map((attribute,index) => {
                     return (
+                      <div className="relative w-full mb-3" key={attribute.id}>
+                      <label className="text-black/60 text-base font-medium capitalize mb-2 block">
+                          {attribute.name || "Unknown"}
+                        </label>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button className="w-[120px] p-3 gap-2 rounded border border-black/15 bg-white ms-4">
-                            {languages.map(
-                              (lang) =>
-                                selectedLanguage === lang.code && (
-                                  <Fragment key={lang.code}>
-                                    <img
-                                      src={lang.flag}
-                                      alt={lang.code}
-                                      width={30}
-                                      height={19}
-                                    />
-                                    <span className="text-neutral-800 text-sm font-bold font-['Cairo']">
-                                      {lang.name}
+                          <Button className="w-full px-4 py-4 flex flex-row justify-between bg-neutral-100 rounded-md">
+                            
+                                  <Fragment  >
+                                    
+                                    <span className="text-neutral-800 text-base font-medium me-4 font-['Cairo']">
+                                      {attribute.variants.find((vari)=> vari.id ===  variants.find((item)=> item.attr_id === index )?.id)?.name}
                                     </span>
+                                    <span className="text-neutral-800 text-base font-medium font-['Cairo']">
+                                      { parseFloat(attribute.variants.find((vari)=> vari.id ===  variants.find((item)=> item.attr_id === index )?.id)?.price ?? '0') * rate } &nbsp; { curr?.name }
+                                    </span>
+
                                   </Fragment>
-                                )
-                            )}
+                               
                             <img
                               src="/icons/arrow-down.svg"
                               alt="arrow down"
@@ -309,34 +351,32 @@ export const ProductDetails = ({
                             />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[120px] p-0 bg-white">
+                        <DropdownMenuContent className="w-full z-50  py-4 bg-neutral-100 rounded-md">
                           <DropdownMenuRadioGroup
-                            value={selectedLanguage}
-                            onValueChange={handleLanguageChange}
+                            value={attribute.variants[0].name}
+                            onValueChange={(value)=> handleVariantsChange(index, value) }
                           >
-                            {languages.map((lang) => (
+                            {attribute.variants.map((variant) => (
                               <DropdownMenuRadioItem
-                                key={lang.code}
-                                value={lang.code}
-                                className="flex gap-2 justify-center hover:bg-stone-100"
+                                key={variant.id}
+                                value={String(variant.id)}
+                                className="flex gap-2 rounded-xl transition-all duration-150 ease-in px-4 justify-start py-4 hover:bg-stone-200"
                               >
-                                <span className="text-neutral-800 text-xs font-bold font-['Cairo']">
-                                  {lang.name}
+                                <span className="text-neutral-800 text-base font-medium font-['Cairo']">
+                                  {variant.name}
                                 </span>
-                                <img
-                                  src={lang.flag}
-                                  alt={lang.code}
-                                  width={30}
-                                  height={19}
-                                />
+                                <span className="text-neutral-800 text-base font-medium font-['Cairo']">
+                                  {parseFloat(variant.price) * rate} &nbsp; { curr?.name }
+                                </span>
                               </DropdownMenuRadioItem>
                             ))}
                           </DropdownMenuRadioGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      </div>
                     );
                   })}
-                  {product.attributes?.map((attribute) => {
+                  {/* {product.attributes?.map((attribute) => {
                     const attr = attribute as ProductAttribute;
 
                     const title = attr.name;
@@ -355,7 +395,7 @@ export const ProductDetails = ({
                         </select>
                       </div>
                     );
-                  })}
+                  })} */}
 
                   <div className="relative mt-4">
                     <Button
