@@ -108,14 +108,14 @@ const Checkout = () => {
                   <ToggleGroup
                     type="single"
                     className="flex flex-col *:w-full *:h-auto"
-                    defaultValue={currency == "imx" ? "imx" : "card"}
+                    defaultValue={currency?.name == "imx" ? "imx" : "card"}
                     onValueChange={(value) => setMethod(value ?? "card")}
                   >
                     <ToggleGroupItem
                       value="card"
                       aria-label="Toggle card"
                       className="justify-between md:items-center !items-start group md:flex-row flex-col"
-                      disabled={currency == "imx"}
+                      disabled={currency?.name == "imx"}
                     >
                       <div className="flex gap-5 items-center">
                         <div className="w-4 h-4 border-neutral-700 border rounded-full relative">
@@ -207,7 +207,7 @@ const Checkout = () => {
                       value="paypal"
                       aria-label="Toggle paypal"
                       className="justify-between items-center group"
-                      disabled={currency == "imx"}
+                      disabled={currency?.name == "imx"}
                     >
                       <div className="flex gap-5 items-center">
                         <div className="w-4 h-4 border-neutral-700 border rounded-full relative">
@@ -232,7 +232,7 @@ const Checkout = () => {
                       value="chargily"
                       aria-label="Toggle chargily"
                       className="justify-between items-center group"
-                      disabled={currency == "dzd"}
+                      disabled={currency?.name == "dzd"}
                     >
                       <div className="flex gap-5 items-center">
                         <div className="w-4 h-4 border-neutral-700 border rounded-full relative">
@@ -257,7 +257,7 @@ const Checkout = () => {
                       value="imx"
                       aria-label="Toggle website"
                       className="justify-between md:items-center !items-start group md:flex-row flex-col"
-                      defaultChecked={currency == "imx" ? true : false}
+                      defaultChecked={currency?.name == "imx" ? true : false}
                     >
                       <div className="flex gap-5 items-center">
                         <div className="w-4 h-4 border-neutral-700 border rounded-full relative">
@@ -360,10 +360,10 @@ const Checkout = () => {
                             <span className="text-zinc-500 text-sm font-normal font-['Lato'] tracking-tight mt-2.5">
                               {new Intl.NumberFormat("en-US", {
                                 style: "currency",
-                                currency,
+                                currency:currency?.name,
                               }).format(
                                 Number(
-                                  product.prices[currency as keyof ProductPrice]
+                                  product.prices[currency?.name as keyof ProductPrice]
                                 )
                               )}
                             </span>
@@ -384,10 +384,10 @@ const Checkout = () => {
                       {cart &&
                         new Intl.NumberFormat("en-US", {
                           style: "currency",
-                          currency,
+                          currency:currency?.name,
                         }).format(
                           Number(
-                            data.total_amount[currency as keyof ProductPrice]
+                            data.total_amount[currency?.name as keyof ProductPrice]
                           )
                         )}
                     </span>

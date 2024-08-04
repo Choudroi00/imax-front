@@ -137,7 +137,7 @@ export const ProductDetails = ({
   //console.log(variants);
   
 
-  const handleVariantsChange = (attr_id, id)=>{
+  const handleVariantsChange = (attr_id: number, id: string)=>{
     setVariants((prevState)=>{
       return [...prevState.map((item)=>{
           return item.attr_id === attr_id ? {...item, id: Number( id )} : item

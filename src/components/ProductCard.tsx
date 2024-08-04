@@ -78,7 +78,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
                   {product.base_ref_price ? (parseFloat(product.base_ref_price)+(parseFloat(product.base_ref_price)) * (product.discount/100) )  * rate  : 0} &nbsp;{curr.name.toUpperCase()}
                 </del>
                 <span className="text-black/85 text-lg font-semibold">
-                {product.base_ref_price ? parseFloat(product.base_ref_price) * rate : 0} &nbsp;{curr.name.toUpperCase()}
+                { parseFloat(product.base_ref_price ?? '0') * rate} &nbsp;{curr.name.toUpperCase()}
                 </span>
               </div>
             ) : (
