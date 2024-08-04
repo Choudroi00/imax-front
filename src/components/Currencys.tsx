@@ -37,12 +37,16 @@ export const Currencys = () => {
       
       setCurrs(currencies);
 
+      localStorage.setItem("currency", JSON.stringify( currencies[0]) );
+
+      fet()
+
     }
       
       
     }
 
-    fet()
+    
 
     //console.log(currency);
     
