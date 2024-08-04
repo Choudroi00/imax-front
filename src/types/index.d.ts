@@ -1,4 +1,5 @@
 import {
+  Currencies,
   ProductImage,
   ProductInfo,
   ProductInput,
@@ -23,8 +24,8 @@ export interface DefaultState {
   userEmail: string | null;
   setUserToken: (token: string) => void;
   setUserEmail: (email: string) => void;
-  currency: string;
-  setCurrency: React.Dispatch<React.SetStateAction<string>>;
+  currency: Currencies | undefined;
+  setCurrency: React.Dispatch<React.SetStateAction<Currencies | undefined>>;
 }
 
 export interface Order {

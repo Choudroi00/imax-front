@@ -268,9 +268,9 @@ export enum CurrencyType {
 
 export interface Currencies {
 
-  name: string;
-  name_variants: LanguageVariant[];
-  symbol: string;
-  type: CurrencyType;
-  value: number;
+  name?: string;
+  name_variants?: LanguageVariant[];
+  symbol?: string;
+  type?: CurrencyType;
+  value?: string;
 }

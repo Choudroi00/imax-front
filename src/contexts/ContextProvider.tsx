@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import type { CurrentUser, DefaultState } from "../types";
+import { Currencies } from "@/types/Dashboard";
 
 const defaultState: DefaultState = {
   currentUser: {},
@@ -8,7 +9,7 @@ const defaultState: DefaultState = {
   userEmail: null,
   setUserToken: () => {},
   setUserEmail: () => {},
-  currency: "usd",
+  currency: {name: "usd"},
   setCurrency: () => {},
 };
 
@@ -20,8 +21,8 @@ export const ContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [currentUser, _setCurrentUser] = useState({});
-  const [currency, setCurrency] = useState<string>(
-    localStorage.getItem("currency") ?? "usd"
+  const [currency, setCurrency] = useState<Currencies | undefined>(
+    JSON.parse( localStorage.getItem("currency")?? "") 
   );
   const [userToken, _setUserToken] = useState<string | null>(
     localStorage.getItem("TOKEN") || ""

@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Thumbs } from "swiper/modules";
 import type { Swiper as TypeSwiper } from "swiper/types";
@@ -9,7 +9,21 @@ import { toast } from "sonner";
 import { renderStars } from "@/lib/renderStars";
 import axiosClient from "@/axios";
 import { useStateContext } from "@/contexts/ContextProvider";
-import { Product, ProductDetails as TypeProductDetails, ProductAttribute, ProductVariant } from "@/types"; 
+import {
+  Product,
+  ProductDetails as TypeProductDetails,
+  ProductAttribute,
+  ProductVariant,
+} from "@/types";
+import { HeartIcon, ShoppingCartIcon, TruckIcon } from "lucide-react";
+import { CategoriesIcon } from "@/assets/svg/CategoriesIcon";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@radix-ui/react-dropdown-menu";
 
 export const ProductDetails = ({
   product,
@@ -116,13 +130,14 @@ export const ProductDetails = ({
         setLoadingWishlist(false);
       });
   };
- 
+
   //DISCOUNT
-  const baseRefPrice = Number(product.base_ref_price);
+  const baseRefPrice = Number(product.base_ref_price) * Number(currency?.value);
   const discount = Number(product.discount);
-  
+  console.log(product.base_ref_price);
+
   // Calculate the price before discount
-  const prixAvantDiscount = (baseRefPrice + discount) * baseRefPrice;
+  const prixAvantDiscount = ((baseRefPrice + discount) * baseRefPrice) / 100;
   return (
     <section className="py-14">
       <Toaster />
@@ -258,62 +273,123 @@ export const ProductDetails = ({
                         </span>
                         {/* Display the price before discount */}
                         <div className="text-neutral-700 text-lg font-medium">
-                          Prix avant discount: {prixAvantDiscount.toFixed(2)}
+                          Product Price: {product.base_ref_price}
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col gap-4">
-                {product.attributes?.map((attribute) => {
-                  const attr = attribute as unknown as {
-                    title_en?: string;
-                    title_fr?: string;
-                    title_ar?: string;
-                    id: number;
-                    variants: ProductVariant[];
-                  };
+                  {product.attributes?.map((attribute) => {
+                    return (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button className="w-[120px] p-3 gap-2 rounded border border-black/15 bg-white ms-4">
+                            {languages.map(
+                              (lang) =>
+                                selectedLanguage === lang.code && (
+                                  <Fragment key={lang.code}>
+                                    <img
+                                      src={lang.flag}
+                                      alt={lang.code}
+                                      width={30}
+                                      height={19}
+                                    />
+                                    <span className="text-neutral-800 text-sm font-bold font-['Cairo']">
+                                      {lang.name}
+                                    </span>
+                                  </Fragment>
+                                )
+                            )}
+                            <img
+                              src="/icons/arrow-down.svg"
+                              alt="arrow down"
+                              width={10}
+                              height={12}
+                            />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[120px] p-0 bg-white">
+                          <DropdownMenuRadioGroup
+                            value={selectedLanguage}
+                            onValueChange={handleLanguageChange}
+                          >
+                            {languages.map((lang) => (
+                              <DropdownMenuRadioItem
+                                key={lang.code}
+                                value={lang.code}
+                                className="flex gap-2 justify-center hover:bg-stone-100"
+                              >
+                                <span className="text-neutral-800 text-xs font-bold font-['Cairo']">
+                                  {lang.name}
+                                </span>
+                                <img
+                                  src={lang.flag}
+                                  alt={lang.code}
+                                  width={30}
+                                  height={19}
+                                />
+                              </DropdownMenuRadioItem>
+                            ))}
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    );
+                  })}
+                  {product.attributes?.map((attribute) => {
+                    const attr = attribute as ProductAttribute;
 
-                  const title = i18n.language === "en"
-                    ? attr.title_en
-                    : i18n.language === "fr"
-                    ? attr.title_fr
-                    : attr.title_ar;
+                    const title = attr.name;
 
-                  return (
-                    <div className="relative w-full" key={attr.id}>
-                      <label className="text-black/60 text-base font-medium capitalize mb-2 block">
-                        {title || "Unknown"}
-                      </label>
-                      <select className="w-full px-4 bg-neutral-100 rounded-md">
-                        {attr.variants.map((variant) => (
-                          <option key={variant.id} value={variant.id}>
-                            {variant.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div className="relative w-full" key={attr.id}>
+                        <label className="text-black/60 text-base font-medium capitalize mb-2 block">
+                          {title || "Unknown"}
+                        </label>
+                        <select className="w-full px-4 py-4 bg-neutral-100 rounded-md">
+                          {attr.variants.map((variant) => (
+                            <option key={variant.id} value={variant.id}>
+                              {variant.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  })}
 
-                                    
                   <div className="relative mt-4">
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-4 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                      className="w-full py-4 px-6 bg-blue-600 text-white font-semibold text-xl rounded-lg hover:bg-blue-700 transition"
                     >
+                      <ShoppingCartIcon className="me-6 text-white text-xl"></ShoppingCartIcon>
                       {loading ? t("addingToCart") : t("addToCart")}
                     </Button>
                   </div>
                 </div>
               </div>
             </form>
+            <div className="flex flex-row justify-between px-8 mt-6 ">
+              <div className="flex flex-row items-center">
+                <div className=" rounded-full aspect-square p-4 bg-slate-100 me-4">
+                  <CategoriesIcon className="text-slate-600" />
+                </div>
+                <div className="text-slate-700 text-lg">Discourd</div>
+              </div>
+              <div className="flex flex-row items-center">
+                <div className=" rounded-full aspect-square p-4 bg-slate-100 me-4">
+                  <TruckIcon className="text-slate-600 " />
+                </div>
+                <div className="text-slate-700 text-lg">{product.type}</div>
+              </div>
+            </div>
             <Button
               onClick={handleAddToWishlist}
-              className="mt-4 w-full py-4 px-6 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+              className="mt-4 w-full py-4 px-6 bg-yellow-500 text-white text-xl font-semibold rounded-lg hover:bg-yellow-600 transition"
               disabled={loadingWishlist}
             >
+              <HeartIcon className="me-6 text-white text-xl"></HeartIcon>
               {loadingWishlist ? t("addingToWishlist") : t("addToWishlist")}
             </Button>
           </div>
@@ -322,4 +398,3 @@ export const ProductDetails = ({
     </section>
   );
 };
-
