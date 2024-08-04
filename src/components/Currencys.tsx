@@ -27,8 +27,10 @@ export const Currencys = () => {
   };
 
   useEffect(()=>{
-    if(!currency?.name){
-
+    if(currencies){
+      return
+    
+    }
     const fet = async () =>{
       const response = await axiosClient.get(link);
       const data = response.data
@@ -37,12 +39,10 @@ export const Currencys = () => {
       
       setCurrs(currencies);
 
-      localStorage.setItem("currency", JSON.stringify( currencies[0]) );
+      //localStorage.setItem("currency", JSON.stringify( currencies[0]) );
 
       fet()
 
-    }
-      
       
     }
 
