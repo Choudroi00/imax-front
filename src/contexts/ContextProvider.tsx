@@ -21,8 +21,9 @@ export const ContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [currentUser, _setCurrentUser] = useState({});
+
   const [currency, setCurrency] = useState<Currencies | undefined>(
-    JSON.parse( localStorage.getItem("currency")?? "[]") 
+    JSON.parse( localStorage.getItem("currency")?? '{"name":"dzd","symbol":"$","value":"220"}') 
   );
   const [userToken, _setUserToken] = useState<string | null>(
     localStorage.getItem("TOKEN") || ""
