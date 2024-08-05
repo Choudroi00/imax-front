@@ -109,7 +109,7 @@ export interface CartProduct {
   title_ar: string;
   title_fr: string;
   image: string;
-  prices: ProductPrice;
+  base_ref_price: string;
   data?: any;
 }
 

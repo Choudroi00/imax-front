@@ -127,7 +127,7 @@ const Cart = () => {
                               currency: currency?.name,
                             }).format(
                               Number(
-                                product.prices[currency?.name as keyof ProductPrice]
+                                parseFloat(product.base_ref_price) * parseFloat(currency?.value ?? '1') 
                               )
                             )}
                           </TableCell>
