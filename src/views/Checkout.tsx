@@ -360,7 +360,7 @@ const Checkout = () => {
                             <span className="text-zinc-500 text-sm font-normal font-['Lato'] tracking-tight mt-2.5">
                               {new Intl.NumberFormat("en-US", {
                                 style: "currency",
-                                currency:currency?.name,
+                                currency:'usd',
                               }).format(
                                 Number(
                                   parseFloat(product.base_ref_price) * parseFloat(currency?.value ?? '1') 
@@ -384,10 +384,10 @@ const Checkout = () => {
                       {cart &&
                         new Intl.NumberFormat("en-US", {
                           style: "currency",
-                          currency:currency?.name,
+                          currency:'usd',
                         }).format(
                           Number(
-                            data.total_amount[currency?.name as keyof ProductPrice]
+                            data.total_amount
                           )
                         )}
                     </span>
