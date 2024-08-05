@@ -25,7 +25,6 @@ const Cart = () => {
   });
   const fetcher = async () => {
     const response = await axiosClient.get("/cart");
-
     return response.data;
   };
 
@@ -41,7 +40,7 @@ const Cart = () => {
       .delete("/cart/" + id)
       .then((response) => {
         toast("Success!", {
-          description: response.data.message || "Product added to cart",
+          description: response.data.message || "Product removed from cart",
           className: "bg-green-600 border-0",
           action: {
             label: "Close",
@@ -89,58 +88,65 @@ const Cart = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {cart &&
-                      cart.map((product) => (
-                        <TableRow key={product.id}>
-                          <TableCell>
-                            <img
-                              src={product.image}
-                              alt={product.title_en}
-                              width={64}
-                              height={64}
-                              className="w-16 h-16 rounded object-contain"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-neutral-700 text-lg font-normal font-['Lato'] tracking-tight w-[250px]">
-                              {i18n.language == "en"
-                                ? product.title_en
-                                : i18n.language == "ar"
-                                ? product.title_ar
-                                : product.title_fr}
-                            </span>
-                            {product.data &&
-                              Object.entries(product.data).map(
-                                ([key, value]: [string, any]) => (
-                                  <span
-                                    key={key}
-                                    className="text-zinc-500 text-sm font-normal font-['Lato']"
-                                  >
-                                    {key.toUpperCase()}: {value}
-                                  </span>
-                                )
-                              )}
-                          </TableCell>
-                          <TableCell>
-                            {new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              currency: currency?.name,
-                            }).format(
-                              Number(
-                                product.prices[currency?.name as keyof ProductPrice]
+                    {cart.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <img
+                            src={product.image}
+                            alt={product.title_en}
+                            width={64}
+                            height={64}
+                            className="w-16 h-16 rounded object-contain"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-neutral-700 text-lg font-normal font-['Lato'] tracking-tight w-[250px]">
+                            {i18n.language == "en"
+                              ? product.title_en
+                              : i18n.language == "ar"
+                              ? product.title_ar
+                              : product.title_fr}
+                          </span>
+                          {product.data &&
+                            Object.entries(product.data).map(
+                              ([key, value]: [string, any]) => (
+                                <span
+                                  key={key}
+                                  className="text-zinc-500 text-sm font-normal font-['Lato']"
+                                >
+                                  {key.toUpperCase()}: {value}
+                                </span>
                               )
                             )}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Button
-                              onClick={() => handleDelete(product.id)}
-                              className="w-full"
-                            >
-                              <img src="/icons/delete.svg" alt="delete" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableCell>
+                                                
+                        <TableCell>
+                          {data && data.total_amount && currency ? (
+                            new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: currency.name || 'usd', // Fallback to 'usd' if currency.name is null or undefined
+                            }).format(
+                              Number(data.total_amount[currency.name as keyof ProductPrice] || 0)
+                            )
+                          ) : (
+                            // Fallback if currency or data.total_amount is missing
+                            new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: 'usd', // Default to 'usd' if currency is null or undefined
+                            }).format(0)
+                          )}
+                        </TableCell>
+
+                        <TableCell className="text-center">
+                          <Button
+                            onClick={() => handleDelete(product.id)}
+                            className="w-full"
+                          >
+                            <img src="/icons/delete.svg" alt="delete" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
@@ -155,19 +161,18 @@ const Cart = () => {
                         {t("Subtotal")}
                       </span>
                       <span className="text-zinc-500 text-base font-medium font-['Lato'] tracking-tight">
-                        ( {cart && cart.length} items )
+                        ({cart.length} items)
                       </span>
                     </h5>
                     <span className="text-neutral-700 text-lg font-medium font-['Lato'] tracking-tight">
-                      {cart &&
-                        new Intl.NumberFormat("en-US", {
+                    {data && data.total_amount && currency
+                      ? new Intl.NumberFormat("en-US", {
                           style: "currency",
-                          currency:currency?.name,
+                          currency: currency.name,
                         }).format(
-                          Number(
-                            data.total_amount[currency?.name as keyof ProductPrice]
-                          )
-                        )}
+                          Number(data.total_amount?.[currency.name as keyof ProductPrice] || 0)
+                        )
+                      : 0}
                     </span>
                   </div>
                   <div className="mt-4">
