@@ -232,7 +232,7 @@ const Checkout = () => {
                       value="chargily"
                       aria-label="Toggle chargily"
                       className="justify-between items-center group"
-                      disabled={currency?.name == "dzd"}
+                      disabled={currency?.name?.toLocaleLowerCase() == "dzd"}
                     >
                       <div className="flex gap-5 items-center">
                         <div className="w-4 h-4 border-neutral-700 border rounded-full relative">
