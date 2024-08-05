@@ -321,6 +321,9 @@ export const ProductDetails = ({
                     )}
                   </div>
                 </div>
+                <div className="mt-4 flex border-b flex-col gap-4">
+                  {product.short_description}
+                </div>
                 <div className="mt-4 flex flex-col gap-4">
                   {product.attributes?.map((attribute,index) => {
                     return (
