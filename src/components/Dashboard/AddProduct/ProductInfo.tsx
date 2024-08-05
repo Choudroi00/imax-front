@@ -67,11 +67,12 @@ export const ProductInfo = ({
       base_ref_price: formData.get('base_ref_price')?.toString() ?? "0",
       short_description: formData.get("short_description")?.toString() ?? "",
       discount: formData.get("discount")?.toString() ?? "0",
-      variants: savedAttsCopy?.flatMap((item)=>{
-        return item.variants?.map((itm) : ProductVariant=>{
+      variants: savedAttsCopy?.flatMap((attr)=>{
+        
+        return attr.variants?.map((variant)=>{
           return {
-            ...itm,
-            price: String(itm.price)
+            ...variant,
+            attr_id: baseAttributes?.find((battr)=> battr.name === attr.name )?.id
           }
         })
       }) as SaveVariant[] ,
@@ -93,7 +94,7 @@ export const ProductInfo = ({
 
     }
 
-    console.log(product.attributes);
+    console.log(product.attributes?.flat);
     
 
     setProductInfo(product)
