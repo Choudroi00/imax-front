@@ -22,11 +22,19 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
   let storedCurrency;
   try {
     const currencyFromStorage = localStorage.getItem("currency");
-    storedCurrency = currencyFromStorage ? JSON.parse(currencyFromStorage) : defaultCurrency;
+    // Check if the currency value is valid JSON
+    if (currencyFromStorage) {
+      storedCurrency = JSON.parse(currencyFromStorage);
+    } else {
+      throw new Error("No currency found");
+    }
   } catch (error) {
     console.error("Invalid JSON in local storage for 'currency'. Using default value.", error);
+    // Clear invalid value and use default
+    localStorage.removeItem("currency");
     storedCurrency = defaultCurrency;
   }
+  
 
   const [currency, _setCurrency] = useState<Currencies | undefined>(storedCurrency);
   const [userToken, _setUserToken] = useState<string | null>(
@@ -64,9 +72,13 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
   const setCurrency = (value: React.SetStateAction<Currencies | undefined>) => {
     const newCurrency = typeof value === 'function' ? value(currency) : value;
     _setCurrency(newCurrency);
-    localStorage.setItem("currency", JSON.stringify(newCurrency));
+    try {
+      localStorage.setItem("currency", JSON.stringify(newCurrency));
+    } catch (error) {
+      console.error("Error setting currency in local storage.", error);
+    }
   };
-
+  
   return (
     <StateContext.Provider
       value={{

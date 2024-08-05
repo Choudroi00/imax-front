@@ -84,6 +84,10 @@ const Checkout = () => {
     return <Loading />;
   }
 
+  const totalAmountImx = data?.total_amount_imx ?? 0; // Default to 0
+  const totalAmount = data?.total_amount ?? {}; // Default to empty object
+  const currencyName = currency?.name ?? 'usd'; // Default to 'usd'
+
   return (
     <section className="pt-7 pb-20">
       <Toaster />
@@ -269,7 +273,7 @@ const Checkout = () => {
                             {new Intl.NumberFormat("en-US", {
                               style: "currency",
                               currency: "imx",
-                            }).format(data.total_amount_imx)}
+                            }).format(totalAmountImx)} 
                             )
                           </h5>
                         </div>
@@ -360,13 +364,15 @@ const Checkout = () => {
                             <span className="text-zinc-500 text-sm font-normal font-['Lato'] tracking-tight mt-2.5">
                               {new Intl.NumberFormat("en-US", {
                                 style: "currency",
-                                currency:currency?.name,
+                                currency: currencyName,
                               }).format(
                                 Number(
-                                  product.prices[currency?.name as keyof ProductPrice]
+                                  product.prices?.[currencyName as keyof ProductPrice] || 0 // Default to 0 if price is undefined
                                 )
                               )}
                             </span>
+
+
                           </div>
                         </div>
                       ))}
@@ -384,13 +390,14 @@ const Checkout = () => {
                       {cart &&
                         new Intl.NumberFormat("en-US", {
                           style: "currency",
-                          currency:currency?.name,
+                          currency: currencyName,
                         }).format(
                           Number(
-                            data.total_amount[currency?.name as keyof ProductPrice]
+                            totalAmount?.[currencyName as keyof ProductPrice] || 0 // Default to 0 if amount is undefined
                           )
                         )}
                     </span>
+
                   </div>
                 </div>
               </div>
