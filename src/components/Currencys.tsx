@@ -13,39 +13,42 @@ import { Currencies } from "@/types/Dashboard";
 import useSWR from "swr";
 import axiosClient from "@/axios";
 import { log } from "console";
+import { json } from "stream/consumers";
 
 export const Currencys = () => {
   const { currency, setCurrency } = useStateContext();
   const [loading, setLoading] = useState(false);
-  const [currencies, setCurrs ] = useState<Currencies[]>() ;
+  const [currencies, setCurrs ] = useState<Currencies[] | undefined>(()=> {
+    const savedCurrencies = localStorage.getItem('saved_currs');
+    return savedCurrencies ? JSON.parse(savedCurrencies) : [];
+  }) ;
 
   
   const link = "/currencies";
 
-  const fatcher = async () => {
-    
-  };
 
   useEffect(()=>{
-    if(currencies){
-      return
     
-    }
     const fet = async () =>{
       const response = await axiosClient.get(link);
       const data = response.data
       const { currencies = [] } = data;
       
+      localStorage.setItem("saved_currs",JSON.stringify(currencies))
+      setCurrs(currencies)
       
-      setCurrs(currencies);
-      handleCurrencyChange(currencies[0].name)
+      //handleCurrencyChange(currencies[0].name)
 
       //localStorage.setItem("currency", JSON.stringify( currencies[0]) );
-
-      fet()
-
       
     }
+
+    if(currencies?.length === 0){
+      fet()
+    }
+
+
+    
 
     
 
@@ -53,13 +56,10 @@ export const Currencys = () => {
     
     
 
-    
-
-    
-    
-
     //setCurrs(currenci)
   })
+
+  
   //const {  data, isLoading,mutate } = useSWR(link, fatcher);
 
   //console.log(data);
