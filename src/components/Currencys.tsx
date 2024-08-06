@@ -61,7 +61,7 @@ export const Currencys = () => {
     
 
     //setCurrs(currenci)
-  })
+  },[])
 
   
   //const {  data, isLoading,mutate } = useSWR(link, fatcher);
