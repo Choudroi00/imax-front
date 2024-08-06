@@ -23,7 +23,7 @@ export const ContextProvider = ({
   const [currentUser, _setCurrentUser] = useState({});
 
   const cu = {
-    name: 'dzd',
+    name: "dzd",
     value: '200'
   }
 
