@@ -35,7 +35,8 @@ export const Currencys = () => {
       const { currencies = [] } = data;
       
       localStorage.setItem("saved_currs",JSON.stringify(currencies))
-      setCurrs(currencies)
+      
+      return currencies
       
       //handleCurrencyChange(currencies[0].name)
 
@@ -43,9 +44,12 @@ export const Currencys = () => {
       
     }
 
-    if(currencies?.length === 0){
-      fet()
-    }
+    fet().then((resp)=>{
+      if(currencies === resp){
+        return 
+      }
+      setCurrs(resp)
+    })
 
 
     
