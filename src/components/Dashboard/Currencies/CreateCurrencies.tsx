@@ -242,7 +242,7 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
                 title="value"
                 placeholder="value"
                 name="value"
-                type="number"
+                type="text"
               />
             </div>
           </div>
