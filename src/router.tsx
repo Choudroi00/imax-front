@@ -31,6 +31,7 @@ import OrderView from "./views/Dashboard/OrderView";
 import Coupons from "./views/Dashboard/Coupons";
 import Currencies from "./views/Dashboard/Currencies";
 import Attributes from "./views/Dashboard/Attributes";
+import  CurrencyView  from "./views/Dashboard/CurrencyView";
 
 const router = createBrowserRouter([
   {
@@ -171,6 +172,10 @@ const router = createBrowserRouter([
             path: "dashboard/currencies",
             element: <Currencies />,
           },
+          {
+            path:"dashboard/currencies/:id",
+            element: <CurrencyView />
+          }
         ],
       },
     ],
