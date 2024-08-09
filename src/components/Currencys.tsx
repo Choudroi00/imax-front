@@ -6,14 +6,72 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loading } from "./ui/loading";
 import { useStateContext } from "@/contexts/ContextProvider";
+import { Currencies } from "@/types/Dashboard";
+import useSWR from "swr";
+import axiosClient from "@/axios";
+import { log } from "console";
+import { json } from "stream/consumers";
 
 export const Currencys = () => {
   const { currency, setCurrency } = useStateContext();
   const [loading, setLoading] = useState(false);
-  const currencys = ["usd", "sar", "aed", "kwd", "eur", "dzd", "egp", "imx"];
+  const [currencies, setCurrs ] = useState<Currencies[] | undefined>(()=> {
+    const savedCurrencies = localStorage.getItem('saved_currs');
+    return savedCurrencies ? JSON.parse(savedCurrencies) : [];
+  }) ;
+
+  
+  const link = "/currencies";
+
+
+  useEffect(()=>{
+    
+    const fet = async () =>{
+      const response = await axiosClient.get(link);
+      const data = response.data
+      const { currencies = [] } = data;
+      
+      localStorage.setItem("saved_currs",JSON.stringify(currencies))
+      
+      return currencies
+      
+      //handleCurrencyChange(currencies[0].name)
+
+      //localStorage.setItem("currency", JSON.stringify( currencies[0]) );
+      
+    }
+
+    fet().then((resp)=>{
+      if(currencies === resp){
+        return 
+      }
+      setCurrs(resp)
+    })
+
+
+    
+
+    
+
+    //console.log(currency);
+    
+    
+
+    //setCurrs(currenci)
+  },[])
+
+  
+  //const {  data, isLoading,mutate } = useSWR(link, fatcher);
+
+  //console.log(data);
+  
+
+  //const {currencies } : {currencies : Currencies[]} = data
+
+
 
   const handleCurrencyChange = (value: string) => {
     if (value == currency) {
@@ -23,8 +81,8 @@ export const Currencys = () => {
     setTimeout(() => {
       setLoading(false);
     }, 500);
-    setCurrency(value);
-    localStorage.setItem("currency", value);
+    setCurrency( currencies?.find((item)=> item.name === value))
+    localStorage.setItem("currency", JSON.stringify( currencies?.find((item)=> item.name === value)) );
   };
 
   return (
@@ -33,7 +91,7 @@ export const Currencys = () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="w-[66px] p-3 gap-2 rounded border border-black/15 bg-white ms-1 uppercase text-sm font-medium">
-            {currency}
+            {currency?.name}
             <img
               src="/icons/arrow-down.svg"
               alt="arrow down"
@@ -44,17 +102,17 @@ export const Currencys = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[66px] bg-white p-0">
           <DropdownMenuRadioGroup
-            value={currency}
+            value={''}
             onValueChange={handleCurrencyChange}
           >
-            {currencys.map((currency) => (
+            {currencies?.map((currenc) => (
               <DropdownMenuRadioItem
-                value={currency}
+                value={currenc.name? currenc.name : ""}
                 className="flex gap-2 justify-start hover:bg-gray-100"
-                key={currency}
+                key={currenc.name}
               >
                 <span className="text-neutral-800 text-xs font-bold font-['Cairo'] uppercase">
-                  {currency}
+                  {currenc.name}
                 </span>
               </DropdownMenuRadioItem>
             ))}

@@ -11,6 +11,12 @@ export const ProductCard = ({ product }: { product: Product }) => {
   const { language } = i18n;
   const { currency } = useStateContext();
 
+  const curr = currency
+  const rate = parseFloat(curr?.value ?? '0')
+
+  //console.log(curr);
+  
+
   return (
     <div className="relative">
       {product.availability == "out of stock" && (
@@ -69,15 +75,16 @@ export const ProductCard = ({ product }: { product: Product }) => {
             {product.discount ? (
               <div className="flex gap-2 items-center">
                 <del className="text-black/60 text-xs font-medium">
-                  {product.base_ref_price}
+                  {product.base_ref_price ? (parseFloat(product.base_ref_price)+(parseFloat(product.base_ref_price)) * (product.discount/100) )  * rate  : 0} &nbsp;{curr?.name?.toUpperCase()}
                 </del>
                 <span className="text-black/85 text-lg font-semibold">
-                  {product.base_ref_price}
+                { parseFloat(product.base_ref_price ?? '0') * rate} &nbsp;{curr?.name?.toUpperCase()}
                 </span>
               </div>
             ) : (
               <span className="text-black/85 text-lg font-semibold">
-                {product.base_ref_price}
+                
+                {product.base_ref_price ? (parseFloat(product.base_ref_price)  * rate)   : 0} &nbsp;{curr?.name?.toUpperCase()}
               </span>
             )}
           </div>

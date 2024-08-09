@@ -27,6 +27,8 @@ const ProductView = () => {
         .get("/dashboard/products/" + id)
         .then(({ data }) => {
           setProduct(data.data);
+          
+          
         })
         .catch(() => {
           router.navigate("/404");

@@ -98,7 +98,7 @@ export const PriceRangeInput = ({
           <span className="text-neutral-700 text-base font-normal">
             {new Intl.NumberFormat("en-US", {
               style: "currency",
-              currency,
+              currency: currency?.name,
             }).format(min)}
           </span>
         </div>
@@ -106,7 +106,7 @@ export const PriceRangeInput = ({
           <span className="text-neutral-700 text-base font-normal">
             {new Intl.NumberFormat("en-US", {
               style: "currency",
-              currency,
+              currency: currency?.name,
             }).format(max)}
           </span>
         </div>

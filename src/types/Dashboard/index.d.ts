@@ -1,5 +1,17 @@
 import { Category, ProductReviews } from "..";
 
+
+
+
+export interface SaveVariant {
+  id?: number
+  attr_id?: number,
+  name?: string,
+  price?: string,
+  name_variants?: LanguageVariant[]
+}
+
+
 export interface ProductInfo {
   id?: number | string;
 
@@ -11,6 +23,7 @@ export interface ProductInfo {
   description_en?: string;
   description_ar?: string;
   short_description?: string;
+  short_description_variants?: LanguageVariant[];
 
   category_id?: string | number;
 
@@ -21,8 +34,11 @@ export interface ProductInfo {
 
   slug?: string;
   
-  discount?: number
-  base_ref_price?: number
+  discount?: string
+  base_ref_price?:string,
+
+  attributes?: ProductAttribute[],
+  variants?: SaveVariant[]
 }
 
 export interface ProductImage {
@@ -68,22 +84,29 @@ interface Option {
 
 
 export interface ProductVariant {
-  id: number
-  name: string
-  name_variants: LanguageVariant[] | undefined
-  attr_id: number
-  product_id: number | undefined
-  price: string
+  id?: number
+  name?: string
+  name_variants?: LanguageVariant[] | undefined
+  attr_id?: number
+  product_id?: number | undefined
+  price?: string
 }
 export interface ProductAttribute extends ProductAttributeInfo{
 
-  variants: ProductVariant[]
+  variants?: ProductVariant[],
+  
 
+}
+export interface ProductAttributeWithTitles extends ProductAttribute {
+  title_en?: string;
+  title_fr?: string;
+  title_ar?: string;
 }
 
 export interface ProductAttributeInfo {
-  name: string
-  name_variants: LanguageVariant[] | undefined
+  id?: number
+  name?: string
+  name_variants?: LanguageVariant[] | undefined
 
 }
 
@@ -93,8 +116,18 @@ export interface Product extends ProductInfo {
   codes?: ProductCode[];
   seo?: ProductSeo;
   questions?: ProductQuestion[];
-  base_ref_price: number
-  attributes: ProductAttribute[]
+  base_ref_price?:string
+  attributes?: ProductAttribute[]
+}
+
+export interface Product extends ProductInfo {
+  images?: ProductImage[];
+  inputs?: ProductInput[];
+  codes?: ProductCode[];
+  seo?: ProductSeo;
+  questions?: ProductQuestion[];
+  base_ref_price?:string
+  attributes?: ProductAttribute[]
 }
 
 export interface ProductSeo {
@@ -119,7 +152,7 @@ export interface ProductPrice {
   dzd: string | number;
   egp: string | number;
   imx: string | number;
-  discount?: number | string;
+  discount?: string;
 }
 
 export interface AllProduct {
@@ -235,9 +268,9 @@ export enum CurrencyType {
 
 export interface Currencies {
 
-  name: string;
-  name_variants: LanguageVariant[];
-  symbol: string;
-  type: CurrencyType;
-  value: number;
+  name?: string;
+  name_variants?: LanguageVariant[];
+  symbol?: string;
+  type?: CurrencyType;
+  value?: string;
 }

@@ -19,7 +19,7 @@ interface NameVariant {
   name: string;
 }
 
-export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
+export const CreateAttribute = ({ mutate }: { mutate: KeyedMutator<any> }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [nameVariants, setNameVariants] = useState<NameVariant[]>([{ lang: '', name: '' }]);
@@ -44,18 +44,16 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
     const data = {
       name: formData.get("name"),
       name_variants: nameVariants,
-      symbol: formData.get("symbol"),
-      type: formData.get("type"),
-      value: formData.get("value"),
+      
     };
 
     const target: any = event.target;
 
     axiosClient
-    .post('/dashboard/currencies', data)
+    .post('/dashboard/attributes', data)
     .then((resp)=>{
       toast("Success!", {
-        description: resp.data.message || "Currency created successfully",
+        description: resp.data.message || "Attribute created successfully",
         className: "bg-green-600 border-0",
         action: {
           label: "Close",
@@ -101,77 +99,19 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
 
   }
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
-    const data = {
-      name: formData.get("name"),
-      name_variants: nameVariants,
-      symbol: formData.get("symbol"),
-      type: formData.get("type"),
-      value: formData.get("value"),
-    };
-    const target: any = event.target;
-
-    setLoading(true);
-
-    axiosClient
-      .post("/dashboard/categories", data)
-      .then((response) => {
-        toast("Success!", {
-          description: response.data.message || "Currency created successfully",
-          className: "bg-green-600 border-0",
-          action: {
-            label: "Close",
-            onClick: () => {},
-          },
-        });
-        mutate();
-
-        target.reset();
-        setNameVariants([{ lang: '', name: '' }]); // Reset name variants
-      })
-      .catch((error) => {
-        if (error.response.status == 422) {
-          Object.keys(error.response.data.errors).forEach((key: string) => {
-            error.response.data.errors[key].forEach((errorMessage: string) => {
-              toast("Error validation failed " + key, {
-                description: errorMessage,
-                className: "bg-red-600 border-0",
-                action: {
-                  label: "Close",
-                  onClick: () => {},
-                },
-              });
-            });
-          });
-        } else {
-          toast("Error!", {
-            description: error.response?.data?.message || "An error occurred",
-            className: "bg-red-600 border-0",
-            action: {
-              label: "Close",
-              onClick: () => {},
-            },
-          });
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  
 
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <DialogTrigger asChild>
         <Button className="text-white bg-green-600 px-5 py-3 rounded-xl font-['Lato'] font-semibold">
-          Add New Currency
+          Add New Attribute
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] md:max-w-[636px] bg-white">
         <form className={"select-none"} onSubmit={postCurrency}>
           <DialogHeader>
-            <DialogTitle>New Currency</DialogTitle>
+            <DialogTitle>New Attribute</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 grid-cols-2 py-4">
             <div className="col-span-1">
@@ -216,35 +156,7 @@ export const CreateCurrencies = ({ mutate }: { mutate: KeyedMutator<any> }) => {
                 Add Name Variant
               </button>
             </div>
-            <div className="col-span-1">
-              <FormGroup
-                title="symbol"
-                placeholder="symbol"
-                name="symbol"
-                type="text"
-              />
-            </div>
-            <div className="col-span-1">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="type">
-                Type
-              </label>
-              <select
-                id="type"
-                name="type"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              >
-                <option value="ref">Reference</option>
-                <option value="slave">Slave</option>
-              </select>
-            </div>
-            <div className="col-span-1">
-              <FormGroup
-                title="value"
-                placeholder="value"
-                name="value"
-                type="text"
-              />
-            </div>
+            
           </div>
           <DialogFooter>
             <Button

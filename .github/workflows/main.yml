@@ -3,7 +3,7 @@ name: DeployReactApp
 on:
   push:
     branches:
-      - admin-re-ui
+      - main
   workflow_dispatch:
 
 jobs:
@@ -66,13 +66,13 @@ jobs:
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Move Artificats To Server
-        run: scp -P ${{ secrets.SSH_PORT }} build.zip ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/${{ env.HOSTINGER_USER }}/domains/${{ env.DOMAIN }}/public_html/${{ env.DEPLOY_PATH }}/
+        run: scp -P ${{ secrets.SSH_PORT }} build.zip ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/${{ env.HOSTINGER_USER }}/domains/${{ env.DOMAIN }}/public_html/
 
       - name: Post Deploy
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} << 'EOF'
 
-          cd /home/${{ env.HOSTINGER_USER }}/domains/${{ env.DOMAIN }}/public_html/${{ env.DEPLOY_PATH }}/
+          cd /home/${{ env.HOSTINGER_USER }}/domains/${{ env.DOMAIN }}/public_html/
 
           unzip build.zip -d .
 

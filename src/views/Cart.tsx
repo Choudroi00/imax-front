@@ -124,10 +124,10 @@ const Cart = () => {
                           <TableCell>
                             {new Intl.NumberFormat("en-US", {
                               style: "currency",
-                              currency,
+                              currency: currency?.name,
                             }).format(
                               Number(
-                                product.prices[currency as keyof ProductPrice]
+                                parseFloat(product.base_ref_price) * parseFloat(currency?.value ?? '1') 
                               )
                             )}
                           </TableCell>
@@ -162,10 +162,10 @@ const Cart = () => {
                       {cart &&
                         new Intl.NumberFormat("en-US", {
                           style: "currency",
-                          currency,
+                          currency:currency?.name,
                         }).format(
                           Number(
-                            data.total_amount[currency as keyof ProductPrice]
+                            data.total_amount[currency?.name as keyof ProductPrice]
                           )
                         )}
                     </span>

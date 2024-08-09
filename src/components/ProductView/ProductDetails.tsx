@@ -1,28 +1,30 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Thumbs } from "swiper/modules";
 import type { Swiper as TypeSwiper } from "swiper/types";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Product, ProductDetails as TypeProductDetails } from "@/types";
 import { useTranslation } from "react-i18next";
-import { Input } from "../ui/input";
-import { ProductPrice } from "@/types/Dashboard";
-import { useStateContext } from "@/contexts/ContextProvider";
-import axiosClient from "@/axios";
 import { Toaster } from "../ui/sonner";
 import { toast } from "sonner";
-import { Label } from "../ui/label";
 import { renderStars } from "@/lib/renderStars";
-import router from "@/router";
+import axiosClient from "@/axios";
+import { useStateContext } from "@/contexts/ContextProvider";
+import {
+  Product,
+  ProductDetails as TypeProductDetails,
+  ProductAttribute,
+  ProductVariant,
+} from "@/types";
+import { HeartIcon, ShoppingCartIcon, TruckIcon } from "lucide-react";
+import { CategoriesIcon } from "@/assets/svg/CategoriesIcon";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@radix-ui/react-dropdown-menu";
+import { log } from "console";
 
 export const ProductDetails = ({
   product,
@@ -43,6 +45,11 @@ export const ProductDetails = ({
   const [loading, setLoading] = useState(false);
   const [loadingWishlist, setLoadingWishlist] = useState(false);
 
+  
+
+  const curr = currency
+  const rate = parseFloat(curr?.value ?  curr.value : '1')
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -51,24 +58,7 @@ export const ProductDetails = ({
     const formData = new FormData(event.currentTarget);
     const dataInput: any[] = [];
 
-    formData.forEach((value, key) => {
-      dataInput.push({ key, value });
-
-      if (!value) {
-        hasError = true;
-        toast("Error!", {
-          description: `Please enter a value for the "${key}" field.`,
-          className: "bg-red-600 border-0",
-          action: {
-            label: "Close",
-            onClick: () => {},
-          },
-        });
-      }
-    });
-
-    if (!hasError) {
-      const data = { product_id: product.id, data: JSON.stringify(dataInput) };
+    const data = { product_id: product.id, data: JSON.stringify(variants) };
       setLoading(true);
 
       axiosClient
@@ -96,7 +86,6 @@ export const ProductDetails = ({
         .finally(() => {
           setLoading(false);
         });
-    }
   };
 
   const handleAddToWishlist = () => {
@@ -130,6 +119,67 @@ export const ProductDetails = ({
       });
   };
 
+  //DISCOUNT
+  //const baseRefPrice = Number(product.base_ref_price) * Number(currency?.value);
+  const discount = Number(product.discount);
+  
+
+  // Calculate the price before discount
+  //const prixAvantDiscount = ((baseRefPrice + discount) * baseRefPrice) / 100;
+
+  const [variants,setVariants] = useState(product.attributes.map((attr,index)=>{
+    return {
+      attr_id: index,
+      id: attr.variants[0].id
+    }
+  }))
+
+  //console.log(variants);
+  
+
+  const handleVariantsChange = (attr_id: number, id: string)=>{
+    setVariants((prevState)=>{
+      return [...prevState.map((item)=>{
+          return item.attr_id === attr_id ? {...item, id: Number( id )} : item
+        })]
+      
+    })
+    
+  }
+
+  const sumVariants = () : number => {
+    const prices = product.attributes.map((attr) : number=> {
+      const n = parseFloat(attr.variants.find((variant)=> variants.find((nvariant)=> nvariant.id === variant.id )  )?.price ?? '0')
+      console.log(n);
+      
+      return n
+    }  )
+    console.log(prices);
+    
+
+    const totale = prices.reduce((acc, current)=> acc + current)
+
+    return totale
+
+  }
+
+  const [totale_price,setTotalePrice] = useState( parseFloat((product.base_ref_price ?? '0') + sumVariants()) * rate)
+
+  useEffect(()=> {
+    const prices = product.attributes.map((attr) : number=> {
+      const n = parseFloat(attr.variants.find((variant)=> variants.find((nvariant)=> nvariant.id === variant.id )  )?.price ?? '0')
+      console.log(n);
+      
+      return n
+    }  )
+    console.log(prices);
+    
+
+    const totale = prices.reduce((acc, current)=> acc + current)
+    setTotalePrice((parseFloat((product.base_ref_price ?? '0')) + totale) * rate)
+    console.log(totale_price);
+    
+  }, variants)
   return (
     <section className="py-14">
       <Toaster />
@@ -256,200 +306,135 @@ export const ProductDetails = ({
                       {product.comments} {t("comments")}
                     </span>
                   </div>
-                  {Number(product.discount) > 0 && (
-                    <span className="text-red-500 text-lg font-normal">
-                      -{product.discount}%
-                    </span>
-                  )}
+                  <div>
+                    {/* Display discount if available */}
+                    {discount > 0 && (
+                      <div>
+                        <span className="text-red-500 text-lg font-normal">
+                          -{discount}%
+                        </span>
+                        {/* Display the price before discount */}
+                        <div className="text-neutral-700 text-lg font-medium">
+                          Product Price: {totale_price}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-4 flex border-b flex-col gap-4">
+                  {product.short_description}
                 </div>
                 <div className="mt-4 flex flex-col gap-4">
-                  {product.inputs?.map((input) => {
-                    const title =
-                      i18n.language == "en"
-                        ? input.title_en
-                        : i18n.language == "fr"
-                        ? input.title_fr
-                        : input.title_ar;
-                    const data =
-                      typeof input.data === "string"
-                        ? JSON.parse(input.data)
-                        : {};
-                    const options: {
-                      option: string;
-                      uuid: string;
-                    }[] = data.options ?? [];
-
+                  {product.attributes?.map((attribute,index) => {
                     return (
-                      <div className="relative w-full" key={input.id}>
-                        <Label
-                          htmlFor={title}
-                          className="text-black/60 text-base font-medium capitalize mb-2 block"
-                        >
-                          {title}:
-                        </Label>
-                        {input.type == "text" ? (
-                          <Input
-                            type="text"
-                            className="py-2 w-full px-4 bg-neutral-100 rounded-md"
-                            placeholder={"Enter " + title}
-                            name={title}
-                          />
-                        ) : (
-                          <Select name={title}>
-                            <SelectTrigger className="w-full px-4 bg-neutral-100 rounded-md">
-                              <SelectValue placeholder={"Select a " + title} />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                              <SelectGroup>
-                                <SelectLabel>{title}</SelectLabel>
-                                {options?.map((option) => (
-                                  <SelectItem
-                                    value={option.option}
-                                    key={option.uuid}
-                                  >
-                                    {option.option}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        )}
+                      <div className="relative w-full mb-3" key={attribute.id}>
+                      <label className="text-black/60 text-base font-medium capitalize mb-2 block">
+                          {attribute.name || "Unknown"}
+                        </label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button className="w-full px-4 py-4 flex flex-row justify-between bg-neutral-100 rounded-md">
+                            
+                                  <Fragment  >
+                                    
+                                    <span className="text-neutral-800 text-base font-medium me-4 font-['Cairo']">
+                                      {attribute.variants.find((vari)=> vari.id ===  variants.find((item)=> item.attr_id === index )?.id)?.name}
+                                    </span>
+                                    <span className="text-neutral-800 text-base font-medium font-['Cairo']">
+                                      { parseFloat(attribute.variants.find((vari)=> vari.id ===  variants.find((item)=> item.attr_id === index )?.id)?.price ?? '0') * rate } &nbsp; { curr?.name }
+                                    </span>
+
+                                  </Fragment>
+                               
+                            <img
+                              src="/icons/arrow-down.svg"
+                              alt="arrow down"
+                              width={10}
+                              height={12}
+                            />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-full z-50  py-4 bg-neutral-100 rounded-md">
+                          <DropdownMenuRadioGroup
+                            value={attribute.variants[0].name}
+                            onValueChange={(value)=> handleVariantsChange(index, value) }
+                          >
+                            {attribute.variants.map((variant) => (
+                              <DropdownMenuRadioItem
+                                key={variant.id}
+                                value={String(variant.id)}
+                                className="flex gap-2 rounded-xl transition-all duration-150 ease-in px-4 justify-start py-4 hover:bg-stone-200"
+                              >
+                                <span className="text-neutral-800 text-base font-medium font-['Cairo']">
+                                  {variant.name}
+                                </span>
+                                <span className="text-neutral-800 text-base font-medium font-['Cairo']">
+                                  {parseFloat(variant.price) * rate} &nbsp; { curr?.name }
+                                </span>
+                              </DropdownMenuRadioItem>
+                            ))}
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       </div>
                     );
                   })}
-                  <div className="relative mt-4">
-                    <Label
-                      htmlFor="denomination"
-                      className="text-black/60 text-base font-medium capitalize mb-2 block"
-                    >
-                      Denomination:
-                    </Label>
-                    <Select
-                      name="denomination"
-                      defaultValue={product.slug}
-                      onValueChange={(value) =>
-                        router.navigate("/shop/product/" + value)
-                      }
-                    >
-                      <SelectTrigger className="w-full px-4 bg-neutral-100 rounded-md">
-                        <SelectValue placeholder={"Select a denomination"} />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        <SelectGroup className="w-full">
-                          <SelectLabel>Select Denomination</SelectLabel>
-                          {denominations &&
-                            denominations.map((option) => {
-                              return (
-                                <SelectItem
-                                  value={option.slug}
-                                  key={option.id}
-                                  className="w-full"
-                                >
-                                  <div className="flex justify-between w-full">
-                                    <p className="text-black/80 text-sm font-normal truncate w-48 text-start">
-                                      {i18n.language == "en"
-                                        ? option.title_en
-                                        : i18n.language == "fr"
-                                        ? option.title_fr
-                                        : option.title_ar}
-                                    </p>
-                                  </div>
-                                </SelectItem>
-                              );
-                            })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="mt-6 flex md:flex-row flex-col gap-6">
-                  <Button
-                    className="bg-blue-600 py-2 px-8 rounded-lg gap-3 disabled:opacity-60 w-full"
-                    onClick={handleAddToWishlist}
-                    disabled={loadingWishlist}
-                  >
-                    {!loadingWishlist && (
-                      <img
-                        src="/icons/wishlist.svg"
-                        alt="wishlist"
-                        width={14}
-                        height={17}
-                      />
-                    )}
-                    <span className="text-white text-lg font-normal">
-                      {loadingWishlist ? t("loading...") : t("addToWishlist")}
-                    </span>
-                  </Button>
-                  <div className="flex py-3 px-10 justify-center items-center rounded-md border border-neutral-200 w-full">
-                    {product.discount ? (
-                      <div className="flex gap-2 items-center">
-                        <del className="text-neutral-500 text-xs font-medium">
-                          {product.base_ref_price}
-                        </del>
-                        <span className="text-neutral-700 text-lg font-medium">
-                        {product.base_ref_price}
-                        </span>
+                  {/* {product.attributes?.map((attribute) => {
+                    const attr = attribute as ProductAttribute;
+
+                    const title = attr.name;
+
+                    return (
+                      <div className="relative w-full" key={attr.id}>
+                        <label className="text-black/60 text-base font-medium capitalize mb-2 block">
+                          {title || "Unknown"}
+                        </label>
+                        <select className="w-full px-4 py-4 bg-neutral-100 rounded-md">
+                          {attr.variants.map((variant) => (
+                            <option key={variant.id} value={variant.id}>
+                              {variant.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                    ) : (
-                      <span className="text-neutral-700 text-lg font-medium">
-                        {product.base_ref_price}
-                      </span>
-                    )}
+                    );
+                  })} */}
+
+                  <div className="relative mt-4">
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-4 px-6 bg-blue-600 text-white font-semibold text-xl rounded-lg hover:bg-blue-700 transition"
+                    >
+                      <ShoppingCartIcon className="me-6 text-white text-xl"></ShoppingCartIcon>
+                      {loading ? t("addingToCart") : t("addToCart")}
+                    </Button>
                   </div>
-                </div>
-              </div>
-              <div className="pt-6">
-                <div className="flex gap-10">
-                  <div className="flex-1 flex gap-4 items-center">
-                    <img
-                      src="/icons/category.svg"
-                      alt="category"
-                      width={44}
-                      height={44}
-                    />
-                    <span className="text-neutral-700 text-lg font-normal">
-                      {i18n.language == "en"
-                        ? product.category.category_en
-                        : i18n.language == "fr"
-                        ? product.category.category_fr
-                        : product.category.category_ar}
-                    </span>
-                  </div>
-                  <div className="flex-1 flex gap-4 items-center">
-                    <img
-                      src="/icons/type.svg"
-                      alt="category"
-                      width={44}
-                      height={44}
-                    />
-                    <span className="text-neutral-700 text-lg font-normal capitalize">
-                      {i18n.language == "en"
-                        ? product.type_en
-                        : i18n.language == "fr"
-                        ? product.type_fr
-                        : product.type_ar}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-5">
-                  <Button
-                    className="w-full px-10 py-2.5 bg-blue-600 rounded-lg gap-3 disabled:opacity-60"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    <img
-                      src="/icons/cart-2.svg"
-                      alt="cart"
-                      width={20}
-                      height={20}
-                    />
-                    <span className="text-white text-lg font-medium">
-                      {loading ? t("loading...") : t("addToCart")}
-                    </span>
-                  </Button>
                 </div>
               </div>
             </form>
+            <div className="flex flex-row justify-between px-8 mt-6 ">
+              <div className="flex flex-row items-center">
+                <div className=" rounded-full aspect-square p-4 bg-slate-100 me-4">
+                  <CategoriesIcon className="text-slate-600" />
+                </div>
+                <div className="text-slate-700 text-lg">Discourd</div>
+              </div>
+              <div className="flex flex-row items-center">
+                <div className=" rounded-full aspect-square p-4 bg-slate-100 me-4">
+                  <TruckIcon className="text-slate-600 " />
+                </div>
+                <div className="text-slate-700 text-lg">{product.type}</div>
+              </div>
+            </div>
+            <Button
+              onClick={handleAddToWishlist}
+              className="mt-4 w-full py-4 px-6 bg-yellow-500 text-white text-xl font-semibold rounded-lg hover:bg-yellow-600 transition"
+              disabled={loadingWishlist}
+            >
+              <HeartIcon className="me-6 text-white text-xl"></HeartIcon>
+              {loadingWishlist ? t("addingToWishlist") : t("addToWishlist")}
+            </Button>
           </div>
         </div>
       </div>
